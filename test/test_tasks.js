@@ -92,5 +92,12 @@ contract("Tasks", async accounts => {
                                         'Invalid task');
     });
 
+    it("should not be able to complete a task when you are not the task owner", async function() {
 
+        // Complete task
+        let fn = tasksInstance.completeTask(taskId, taskHunter, {from: taskHunter});
+
+        await truffleAssert.reverts(    fn, 
+                                        'Invalid task');
+    });
 });

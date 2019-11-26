@@ -1,0 +1,12 @@
+{
+    "name": "kudos",
+    "version": "1.0.0",
+    "repository": "git@github.com:andyjsbell/kudos.git",
+    "author": "Andy Bell <andy.bell@displaynote.com>",
+    "license": "MIT",
+    
+    "dependencies": {
+        "@openzeppelin/contracts": "^2.4.0"
+    },
+    
+}

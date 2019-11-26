@@ -22,7 +22,7 @@ contract Tasks {
         public
         returns (bool) {
         require(_id[0] != 0, 'Invalid id');
-        require(kudos.allowance(msg.sender, address(this)) > _tokens, 'Insufficent allowance');
+        require(kudos.allowance(msg.sender, address(this)) > _tokens, 'Insufficient allowance');
 
         // Store on chain
         Task memory t;

@@ -37,4 +37,11 @@ contract("Tasks", async accounts => {
                                         'Invalid id');
     });
   
+    it("should not be able to create a task without allowance set", async function() {
+        let fn = tasksInstance.createTask('0x1', initialTokenBalance, {from: taskOwner});
+        
+        await truffleAssert.reverts(    fn, 
+                                        'Insufficient allowance');
+    });
+
 });

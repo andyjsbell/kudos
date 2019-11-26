@@ -100,4 +100,14 @@ contract("Tasks", async accounts => {
         await truffleAssert.reverts(    fn, 
                                         'Invalid task');
     });
+
+    it("should not be able to complete a task when there is no hunter", async function() {
+
+        // Complete task
+        let fn = tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
+
+        await truffleAssert.reverts(    fn, 
+                                        'No hunters');
+    });
+
 });

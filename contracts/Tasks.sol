@@ -41,5 +41,6 @@ contract Tasks {
     function completeTask(bytes32 _id, address winner)
         public {
         require(tasks[_id].owner == msg.sender, 'Invalid task');
+        require(tasks[_id].hunters.length > 0, 'No hunters');
     }
 }

@@ -10,6 +10,8 @@ contract Tasks {
     }
 
     event TaskCreated(address indexed creator, uint indexed tokens);
+    event TaskCompleted(address indexed creator, address indexed hunter, uint indexed tokensTransferred);
+
     mapping(bytes32 => Task) public tasks;
 
     KudosToken private kudos;
@@ -42,5 +44,16 @@ contract Tasks {
         public {
         require(tasks[_id].owner == msg.sender, 'Invalid task');
         require(tasks[_id].hunters.length > 0, 'No hunters');
+        require(winner != address(0x0), 'Invalid hunter');
+ 
+        uint len = tasks[_id].hunters.length;
+        address payee = address(0x0);
+        for (uint i = 0; i < len; i++) {
+            if (winner == tasks[_id].hunters[i]) {
+                payee = winner;
+                break;
+            }
+        }
+        require(payee != address(0x0), 'Invalid hunter');
     }
 }

@@ -83,7 +83,7 @@ contract("Tasks", async accounts => {
                                         'Task exists');
     });
 
-    it("should be able to complete a task that doesn't exist", async function() {
+    it("should not be able to complete a task that doesn't exist", async function() {
 
         // Complete task
         let fn = tasksInstance.completeTask(invalidTaskId, taskHunter, {from: taskOwner});;

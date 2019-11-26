@@ -6,25 +6,39 @@ contract Tasks {
     struct Task {
         address owner;
         uint tokens;
+        address[] hunters;
     }
 
     event TaskCreated(address indexed creator, uint indexed tokens);
-
-
     mapping(bytes32 => Task) public tasks;
-    KudosToken kudos;
+
+    KudosToken private kudos;
 
     constructor(KudosToken _kudos) public {
         kudos = _kudos;
     }
 
     function createTask(bytes32 _id, uint32 _tokens)
-        public {
+        public
+        returns (bool) {
         require(_id != "", 'Invalid id');
-        require(kudos.balanceOf(msg.sender) >= _tokens, 'Insufficient balance');
+        require(kudos.allowance(msg.sender, address(this)) > _tokens, 'Insufficent allowance');
 
+        // Store on chain
+        Task memory t;
+        t.owner = msg.sender;
+        t.tokens = _tokens;
+        tasks[_id] = t;
+
+        // Emit the event
         emit TaskCreated(msg.sender, _tokens);
-        // Stake the tokens, transfer to this contract, TODO
-        tasks[_id] = Task({owner:msg.sender, tokens: _tokens});
+
+        // Stake tokens
+        return kudos.transferFrom(msg.sender, address(this), _tokens);
+    }
+
+    function completeTask(bytes32 _id, address winner)
+        public {
+        require(tasks[_id].owner != address(0x0), 'Invalid task');
     }
 }

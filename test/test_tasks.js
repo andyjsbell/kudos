@@ -10,6 +10,7 @@ contract("Tasks", async accounts => {
     let tasksInstance;
     let taskOwnerBalance, taskHunterBalance, taskHunter1Balance;
     const initialTokenBalance = 100;
+    const tokensForTask = 50;
 
     before("prepare some things", async function() {
         
@@ -44,4 +45,23 @@ contract("Tasks", async accounts => {
                                         'Insufficient allowance');
     });
 
+    it("should be able to create a task with allowance set", async function() {
+
+        // Approve from task owner tokens to be spent on their behalf, allowance has to be higher than that request
+        let txObj = await kudosTokenInstance.approve(tasksInstance.address, tokensForTask + 1, {from:taskOwner});
+
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logApproval = txObj.logs[0];
+        assert.strictEqual(logApproval.event, "Approval");
+
+        // Create task
+        txObj = await tasksInstance.createTask('0x1', tokensForTask, {from: taskOwner});
+
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logTaskCreated = txObj.logs[0];
+        assert.strictEqual(logTaskCreated.event, "TaskCreated");
+    });
+    
 });

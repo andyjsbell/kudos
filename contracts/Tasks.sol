@@ -22,6 +22,7 @@ contract Tasks {
         public
         returns (bool) {
         require(_id[0] != 0, 'Invalid id');
+        require(tasks[_id].owner == address(0x0), 'Task exists');
         require(kudos.allowance(msg.sender, address(this)) > _tokens, 'Insufficient allowance');
 
         // Store on chain

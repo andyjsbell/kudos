@@ -82,4 +82,15 @@ contract("Tasks", async accounts => {
         await truffleAssert.reverts(    fn, 
                                         'Task exists');
     });
+
+    it("should be able to complete a task that doesn't exist", async function() {
+
+        // Complete task
+        let fn = tasksInstance.completeTask(invalidTaskId, taskHunter, {from: taskOwner});;
+
+        await truffleAssert.reverts(    fn, 
+                                        'Invalid task');
+    });
+
+
 });

@@ -11,6 +11,8 @@ contract("Tasks", async accounts => {
     let taskOwnerBalance, taskHunterBalance, taskHunter1Balance;
     const initialTokenBalance = 100;
     const tokensForTask = 50;
+    const taskId = '0x1';
+    const invalidTaskId = '0x0';
 
     before("prepare some things", async function() {
         
@@ -32,14 +34,14 @@ contract("Tasks", async accounts => {
 
     it("should fail to create a task with invalid id", async function() {
         
-        let fn = tasksInstance.createTask('0x0', initialTokenBalance, {from: taskOwner});
+        let fn = tasksInstance.createTask(invalidTaskId, initialTokenBalance, {from: taskOwner});
         
         await truffleAssert.reverts(    fn, 
                                         'Invalid id');
     });
   
     it("should not be able to create a task without allowance set", async function() {
-        let fn = tasksInstance.createTask('0x1', initialTokenBalance, {from: taskOwner});
+        let fn = tasksInstance.createTask(taskId, initialTokenBalance, {from: taskOwner});
         
         await truffleAssert.reverts(    fn, 
                                         'Insufficient allowance');
@@ -56,7 +58,7 @@ contract("Tasks", async accounts => {
         assert.strictEqual(logApproval.event, "Approval");
 
         // Create task
-        txObj = await tasksInstance.createTask('0x1', tokensForTask, {from: taskOwner});
+        txObj = await tasksInstance.createTask(taskId, tokensForTask, {from: taskOwner});
 
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);
@@ -64,4 +66,21 @@ contract("Tasks", async accounts => {
         assert.strictEqual(logTaskCreated.event, "TaskCreated");
     });
     
+    
+    it("should not be able to create a task with the same id twice, ever", async function() {
+
+        // Approve from task owner tokens to be spent on their behalf, allowance has to be higher than that request
+        let txObj = await kudosTokenInstance.approve(tasksInstance.address, tokensForTask + 1, {from:taskOwner});
+
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logApproval = txObj.logs[0];
+        assert.strictEqual(logApproval.event, "Approval");
+
+        // Create task again
+        let fn = tasksInstance.createTask(taskId, tokensForTask, {from: taskOwner});;
+
+        await truffleAssert.reverts(    fn, 
+                                        'Task exists');
+    });
 });

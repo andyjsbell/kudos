@@ -12,6 +12,7 @@ contract("Tasks", async accounts => {
     const initialTokenBalance = 100;
     const tokensForTask = 50;
     const taskId = '0x1';
+    const anotherTaskId = '0x2';
     const invalidTaskId = '0x0';
 
     before("prepare some things", async function() {
@@ -90,6 +91,15 @@ contract("Tasks", async accounts => {
 
         await truffleAssert.reverts(    fn, 
                                         'Invalid id');
+    });
+
+    it("should be able to add a hunter to a task that does not exist", async function() {
+
+        // Complete task
+        let fn = tasksInstance.addHunter(anotherTaskId, {from: taskHunter});
+
+        await truffleAssert.reverts(    fn, 
+                                        'Task does not exist');
     });
 
     

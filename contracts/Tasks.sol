@@ -43,8 +43,9 @@ contract Tasks {
     function addHunter(bytes32 _id)
         public {
         require(_id[0] != 0, 'Invalid id');
+        require(tasks[_id].owner != address(0x0), 'Task does not exist');
     }
-    
+
     function completeTask(bytes32 _id, address winner)
         public {
         require(tasks[_id].owner == msg.sender, 'Invalid task');

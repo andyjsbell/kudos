@@ -21,7 +21,7 @@ contract Tasks {
     function createTask(bytes32 _id, uint32 _tokens)
         public
         returns (bool) {
-        require(_id != "", 'Invalid id');
+        require(_id[0] != 0, 'Invalid id');
         require(kudos.allowance(msg.sender, address(this)) > _tokens, 'Insufficent allowance');
 
         // Store on chain

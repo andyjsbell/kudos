@@ -1,6 +1,6 @@
 const Tasks = artifacts.require("./Tasks.sol");
 const KudosToken = artifacts.require("./KudosToken.sol");
-// const truffleAssert = require('truffle-assertions');
+const truffleAssert = require('truffle-assertions');
 const { toBN, stringToHex, toWei } = web3.utils;
 
 contract("Tasks", async accounts => {
@@ -27,6 +27,14 @@ contract("Tasks", async accounts => {
         assert.strictEqual(parseInt(taskOwnerBalance.toString()), initialTokenBalance);
         assert.strictEqual(parseInt(taskHunterBalance.toString()), initialTokenBalance);
         assert.strictEqual(parseInt(taskHunter1Balance.toString()), initialTokenBalance);
+    });
+
+    it("should fail to create a task with invalid id", async function() {
+        
+        let fn = tasksInstance.createTask('0x0', initialTokenBalance, {from: taskOwner});
+        
+        await truffleAssert.reverts(    fn, 
+                                        'Invalid id');
     });
   
 });

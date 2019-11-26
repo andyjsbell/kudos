@@ -66,7 +66,6 @@ contract("Tasks", async accounts => {
         assert.strictEqual(logTaskCreated.event, "TaskCreated");
     });
     
-    
     it("should not be able to create a task with the same id twice, ever", async function() {
 
         // Approve from task owner tokens to be spent on their behalf, allowance has to be higher than that request
@@ -77,7 +76,7 @@ contract("Tasks", async accounts => {
         const logApproval = txObj.logs[0];
         assert.strictEqual(logApproval.event, "Approval");
 
-        // Create task again
+        // Create task
         let fn = tasksInstance.createTask(taskId, tokensForTask, {from: taskOwner});;
 
         await truffleAssert.reverts(    fn, 

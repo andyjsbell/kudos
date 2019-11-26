@@ -40,6 +40,11 @@ contract Tasks {
         return kudos.transferFrom(msg.sender, address(this), _tokens);
     }
 
+    function addHunter(bytes32 _id)
+        public {
+        require(_id[0] != 0, 'Invalid id');
+    }
+    
     function completeTask(bytes32 _id, address winner)
         public {
         require(tasks[_id].owner == msg.sender, 'Invalid task');

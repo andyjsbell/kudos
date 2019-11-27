@@ -65,7 +65,7 @@ contract("Tasks", async accounts => {
 
     it("should be able to set timeout in days", async function() {
         const newTimeoutInDays = 14; 
-        let txObj = await tasksInstance.setTimeoutInDays(newTimeoutInDays);
+        let txObj = await tasksInstance.setTimeoutInDays(newTimeoutInDays, {from:owner});
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);
         const logTimeoutChanged = txObj.logs[0];

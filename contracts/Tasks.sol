@@ -1,11 +1,12 @@
 pragma solidity ^0.5.0;
 import './KudosToken.sol';
 import '@openzeppelin/contracts/lifecycle/Pausable.sol';
+import '@openzeppelin/contracts/ownership/Ownable.sol';
 
 /// @title A list of Tasks
 /// @author Andy Bell andy.bell@displaynote.com
 /// @notice You can use this contract to create and complete tasks set
-contract Tasks is Pausable {
+contract Tasks is Pausable, Ownable {
 
     struct Task {
         address owner;
@@ -42,6 +43,7 @@ contract Tasks is Pausable {
     /// @return boolean whether updated
     function setTimeoutInDays(uint _timeoutInDays)
         public
+        onlyOwner
         returns (bool) {
         require(_timeoutInDays < 60, 'More than 60 days');
         emit TimeoutChanged(timeoutInDays, _timeoutInDays);

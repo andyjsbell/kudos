@@ -20,10 +20,8 @@ contract Tasks {
     KudosToken private kudos;
 
     /// @author Andy Bell andy.bell@displaynote.com
-    /// @notice Create a task to be completed
-    /// @param _id A 32 character hash which would point to decentralised metainfo
-    /// @param _tokens A number of Kudos tokens for this task
-    /// @return boolean whether we succesfully transfer the tokens for the task
+    /// @notice The Tasks contract
+    /// @param _kudos Address to the Kudos token contract
     constructor(KudosToken _kudos) public {
         kudos = _kudos;
     }

@@ -92,6 +92,16 @@ contract("Tasks", async accounts => {
                                         'Task exists');
     });
 
+
+    it("should not be able to complete a task when there is no hunter", async function() {
+
+        // Complete task
+        let fn = tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
+
+        await truffleAssert.reverts(    fn, 
+                                        'No hunters');
+    });
+    
     it("should not be able to add a hunter with an invalid task", async function() {
 
         // Complete task
@@ -101,7 +111,7 @@ contract("Tasks", async accounts => {
                                         'Invalid id');
     });
 
-    it("should be able to add a hunter to a task that does not exist", async function() {
+    it("should not be able to add a hunter to a task that does not exist", async function() {
 
         // Complete task
         let fn = tasksInstance.addHunter(anotherTaskId, {from: taskHunter});
@@ -111,7 +121,7 @@ contract("Tasks", async accounts => {
     });
 
     it("should be able to add a hunter to a task that does exist", async function() {
-    
+
         // Add hunter
         let txObj = await tasksInstance.addHunter(taskId, {from: taskHunter});
         
@@ -140,17 +150,6 @@ contract("Tasks", async accounts => {
         await truffleAssert.reverts(    fn, 
                                         'Invalid task');
     });
-
-    it("should not be able to complete a task when there is no hunter", async function() {
-
-        // Complete task
-        let fn = tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
-
-        await truffleAssert.reverts(    fn, 
-                                        'No hunters');
-    });
-
-
     
     it("should not be able to complete a task when there is an invalid hunter", async function() {
 

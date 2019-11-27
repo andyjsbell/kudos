@@ -189,7 +189,9 @@ contract("Tasks", async accounts => {
         assert.strictEqual(logTaskCompleted.args.hunter, taskHunter);
         assert.strictEqual(parseInt(logTaskCompleted.args.tokensTransferred.toString()), tokensForTask);
         
+        // Hunter should earn something
         let diffTaskHunterBN = balanceAfterOfTaskHunterBN.sub(balanceBeforeOfTaskHunterBN);
+        // Contract has paid out the tokens
         let diffTaskContractBN = balanceBeforeOfTasksContractBN.sub(balanceAfterOfTasksContractBN);
         
         assert.strictEqual(diffTaskHunterBN.toString(), toBN(tokensForTask).toString());

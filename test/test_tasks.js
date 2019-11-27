@@ -259,7 +259,10 @@ contract("Tasks", async accounts => {
 
     it("should not be able to cancel a task which if you are not the owner", async function() {
 
-        assert(false, "failed");
+        let fn = tasksInstance.cancelTask(taskId, {from: taskHunter});
+
+        await truffleAssert.reverts(    fn, 
+                                        'Invalid task');
     });
 
     it("should not be able to cancel a task which has active hunters", async function() {

@@ -56,7 +56,7 @@ contract("Tasks", async accounts => {
                                         'Insufficient allowance');
     });
 
-    it("should be able to create a task with allowance set", async function() {
+    it("should be able to create a task with allowance set and tokens staked", async function() {
 
         // Approve from task owner tokens to be spent on their behalf, allowance has to be higher than that request
         let txObj = await kudosTokenInstance.approve(tasksInstance.address, tokensForTask + 1, {from:taskOwner});
@@ -66,6 +66,8 @@ contract("Tasks", async accounts => {
         const logApproval = txObj.logs[0];
         assert.strictEqual(logApproval.event, "Approval");
 
+        let balanceBeforeOfTaskOwnerBN = await kudosTokenInstance.balanceOf(taskOwner);
+        let balanceBeforeOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
         // Create task
         txObj = await tasksInstance.createTask(taskId, tokensForTask, {from: taskOwner});
 
@@ -73,6 +75,14 @@ contract("Tasks", async accounts => {
         assert.strictEqual(txObj.logs.length, 1);
         const logTaskCreated = txObj.logs[0];
         assert.strictEqual(logTaskCreated.event, "TaskCreated");
+
+        let balanceAfterOfTaskOwnerBN = await kudosTokenInstance.balanceOf(taskOwner);
+        let balanceAfterOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
+        let diffTaskOwnerBN = balanceBeforeOfTaskOwnerBN.sub(balanceAfterOfTaskOwnerBN);
+        let diffTaskContractBN = balanceAfterOfTasksContractBN.sub(balanceBeforeOfTasksContractBN);
+        
+        assert.strictEqual(diffTaskOwnerBN.toString(), toBN(tokensForTask).toString());
+        assert.strictEqual(diffTaskContractBN.toString(), toBN(tokensForTask).toString());
     });
     
     it("should not be able to create a task with the same id twice, ever", async function() {
@@ -165,6 +175,7 @@ contract("Tasks", async accounts => {
         // Add hunter
         let txObj = await tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
         
+
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);
         const logTaskCompleted = txObj.logs[0];

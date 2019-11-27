@@ -78,7 +78,9 @@ contract("Tasks", async accounts => {
 
         let balanceAfterOfTaskOwnerBN = await kudosTokenInstance.balanceOf(taskOwner);
         let balanceAfterOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
+        // Task owner has staked
         let diffTaskOwnerBN = balanceBeforeOfTaskOwnerBN.sub(balanceAfterOfTaskOwnerBN);
+        // Contract has received the stake
         let diffTaskContractBN = balanceAfterOfTasksContractBN.sub(balanceBeforeOfTasksContractBN);
         
         assert.strictEqual(diffTaskOwnerBN.toString(), toBN(tokensForTask).toString());

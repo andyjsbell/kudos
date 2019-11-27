@@ -294,11 +294,6 @@ contract("Tasks", async accounts => {
                                         'We have hunters');
     });
 
-    it("should be able to pause a task with hunters to request closure", async function() {
-
-        assert(false, "failed");
-    });
-
     it("should be able to cancel a task with no hunters", async function() {
 
         assert(false, "failed");

@@ -244,7 +244,9 @@ contract("Tasks", async accounts => {
 
     it("should not be able to cancel a task with an invalid id", async function() {
 
-        assert(false, "failed");
+        let fn = tasksInstance.cancelTask(invalidTaskId, {from:taskOwner});
+        await truffleAssert.reverts(    fn, 
+                                        'Invalid id');
     });
 
     it("should not be able to cancel a task which does not exist", async function() {

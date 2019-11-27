@@ -101,4 +101,13 @@ contract Tasks {
             tasks[_id].tokens = tokensToTransfer;
         }
     }
+
+    /// @author Andy Bell andy.bell@displaynote.com
+    /// @notice Cancel a task
+    /// @dev Only the owner can cancel the task
+    /// @param _id A 32 character hash which would point to the task
+    function cancelTask(bytes32 _id)
+        public {
+        require(_id[0] != 0, 'Invalid id');
+    }
 }

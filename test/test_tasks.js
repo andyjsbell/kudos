@@ -402,12 +402,19 @@ contract("Tasks", async accounts => {
                                     'Pausable: paused');
     });
 
-    it("should be able to get a list of all tasks", async function() {
+    it("should be able to get a list of all running tasks", async function() {
         assert.isTrue(false);
     });
 
-    it("should be able to get a list of all my tasks", async function() {
+    it("should be able to get a list of all completed tasks", async function() {
         assert.isTrue(false);
     });
 
+    it("should be able to get a list of all my running tasks", async function() {
+        assert.isTrue(false);
+    });
+
+    it("should be able to get a list of all my completed tasks", async function() {
+        assert.isTrue(false);
+    });
 });

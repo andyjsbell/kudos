@@ -160,5 +160,19 @@ contract("Tasks", async accounts => {
                                         'Invalid hunter');
     });
 
+    it("should be able to complete a task with valid hunter", async function() {
 
+        // Add hunter
+        let txObj = await tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
+        
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logTaskCompleted = txObj.logs[0];
+        assert.strictEqual(logTaskCompleted.event, "TaskCompleted");
+        assert.strictEqual(logTaskCompleted.args.task, taskId);
+        assert.strictEqual(logTaskCompleted.args.owner, taskOwner);
+        assert.strictEqual(logTaskCompleted.args.hunter, taskHunter);
+        assert.strictEqual(parseInt(logTaskCompleted.args.tokensTransferred.toString()), 0);
+        
+    });
 });

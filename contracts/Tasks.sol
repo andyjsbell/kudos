@@ -13,7 +13,7 @@ contract Tasks {
     }
 
     event TaskCreated(address indexed creator, uint indexed tokens);
-    event TaskCompleted(address indexed creator, address indexed hunter, uint indexed tokensTransferred);
+    event TaskCompleted(bytes32 indexed task, address indexed owner, address indexed hunter, uint tokensTransferred);
     event HunterAdded(bytes32 indexed task, address indexed hunter);
 
     mapping(bytes32 => Task) public tasks;
@@ -60,7 +60,7 @@ contract Tasks {
         public {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner != address(0x0), 'Task does not exist');
-        
+
         tasks[_id].hunters.push(msg.sender);
         emit HunterAdded(_id, msg.sender);
     }
@@ -72,18 +72,21 @@ contract Tasks {
     /// @param _winner Address of the hunter
     function completeTask(bytes32 _id, address _winner)
         public {
-        require(tasks[_id].owner == msg.sender, 'Invalid task');
+        Task memory t = tasks[_id];
+        require(t.owner == msg.sender, 'Invalid task');
         require(_winner != address(0x0), 'Invalid hunter');
-        require(tasks[_id].hunters.length > 0, 'No hunters');
+        require(t.hunters.length > 0, 'No hunters');
 
-        uint len = tasks[_id].hunters.length;
+        uint len = t.hunters.length;
         address payee = address(0x0);
         for (uint i = 0; i < len; i++) {
-            if (_winner == tasks[_id].hunters[i]) {
+            if (_winner == t.hunters[i]) {
                 payee = _winner;
                 break;
             }
         }
         require(payee != address(0x0), 'Invalid hunter');
+
+        emit TaskCompleted(_id, t.owner, _winner, 0);
     }
 }

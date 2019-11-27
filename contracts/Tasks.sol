@@ -68,9 +68,9 @@ contract Tasks {
     function completeTask(bytes32 _id, address _winner)
         public {
         require(tasks[_id].owner == msg.sender, 'Invalid task');
-        require(tasks[_id].hunters.length > 0, 'No hunters');
         require(_winner != address(0x0), 'Invalid hunter');
-
+        require(tasks[_id].hunters.length > 0, 'No hunters');
+        
         uint len = tasks[_id].hunters.length;
         address payee = address(0x0);
         for (uint i = 0; i < len; i++) {

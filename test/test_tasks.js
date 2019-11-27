@@ -14,6 +14,7 @@ contract("Tasks", async accounts => {
     const taskId = '0x1';
     const anotherTaskId = '0x2';
     const invalidTaskId = '0x0';
+    const invalidAddress = '0x0000000000000000000000000000000000000000';
 
     before("prepare some things", async function() {
         
@@ -135,7 +136,7 @@ contract("Tasks", async accounts => {
     it("should not be able to complete a task when there is an invalid hunter", async function() {
 
         // Complete task
-        let fn = tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
+        let fn = tasksInstance.completeTask(taskId, invalidAddress, {from: taskOwner});
 
         await truffleAssert.reverts(    fn, 
                                         'Invalid hunter');

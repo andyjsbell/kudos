@@ -9,7 +9,7 @@ contract Tasks {
     struct Task {
         address owner;
         uint tokens;
-        address[] hunters;
+        mapping(address=>bool) hunters;
     }
 
     event TaskCreated(bytes32 indexed task, address indexed owner, uint tokens);
@@ -61,7 +61,7 @@ contract Tasks {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner != address(0x0), 'Task does not exist');
 
-        tasks[_id].hunters.push(msg.sender);
+        tasks[_id].hunters[msg.sender] = true;
         emit HunterAdded(_id, msg.sender);
     }
 
@@ -72,20 +72,10 @@ contract Tasks {
     /// @param _winner Address of the hunter
     function completeTask(bytes32 _id, address _winner)
         public {
-        Task memory t = tasks[_id];
+        Task storage t = tasks[_id];
         require(t.owner == msg.sender, 'Invalid task');
         require(_winner != address(0x0), 'Invalid hunter');
-        require(t.hunters.length > 0, 'No hunters');
-
-        uint len = t.hunters.length;
-        address payee = address(0x0);
-        for (uint i = 0; i < len; i++) {
-            if (_winner == t.hunters[i]) {
-                payee = _winner;
-                break;
-            }
-        }
-        require(payee != address(0x0), 'Invalid hunter');
+        require(t.hunters[_winner], 'No hunters');
 
         uint tokensToTransfer = t.tokens;
         tasks[_id].tokens = 0;

@@ -14,6 +14,7 @@ contract Tasks {
 
     event TaskCreated(address indexed creator, uint indexed tokens);
     event TaskCompleted(address indexed creator, address indexed hunter, uint indexed tokensTransferred);
+    event HunterAdded(bytes32 indexed task, address indexed hunter);
 
     mapping(bytes32 => Task) public tasks;
 
@@ -59,6 +60,9 @@ contract Tasks {
         public {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner != address(0x0), 'Task does not exist');
+        
+        tasks[_id].hunters.push(msg.sender);
+        emit HunterAdded(_id, msg.sender);
     }
 
     /// @author Andy Bell andy.bell@displaynote.com

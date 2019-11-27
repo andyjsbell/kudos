@@ -110,7 +110,19 @@ contract("Tasks", async accounts => {
                                         'Task does not exist');
     });
 
+    it("should be able to add a hunter to a task that does exist", async function() {
     
+        // Add hunter
+        let txObj = await tasksInstance.addHunter(taskId, {from: taskHunter});
+        
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logHunterAdded = txObj.logs[0];
+        assert.strictEqual(logHunterAdded.event, "HunterAdded");
+        assert.strictEqual(logHunterAdded.args.task, taskId);
+        assert.strictEqual(logHunterAdded.args.hunter, taskHunter);
+    });
+
     it("should not be able to complete a task that doesn't exist", async function() {
 
         // Complete task

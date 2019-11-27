@@ -93,6 +93,7 @@ contract Tasks {
         require(t.owner == msg.sender, 'Invalid task');
         require(_winner != address(0x0), 'Invalid hunter');
         require(t.hunters[_winner], 'No hunters');
+        require(t.tokens > 0, 'Task completed');
 
         uint tokensToTransfer = t.tokens;
         tasks[_id].tokens = 0;

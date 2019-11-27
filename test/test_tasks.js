@@ -203,6 +203,15 @@ contract("Tasks", async accounts => {
         assert.strictEqual(diffTaskContractBN.toString(), toBN(tokensForTask).toString());
     });
 
+    it("should not be able to complete a task when there are no tokens", async function() {
+
+        // Complete task
+        let fn = tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
+
+        await truffleAssert.reverts(    fn, 
+                                        'Task completed');
+    });
+
     it("should not be able to remove a hunter with an invalid task", async function() {
 
         // Remove hunter

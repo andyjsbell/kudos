@@ -10,6 +10,7 @@ contract Tasks {
         address owner;
         uint tokens;
         mapping(address=>bool) hunters;
+        uint hunterCount;
     }
 
     event TaskCreated(bytes32 indexed task, address indexed owner, uint tokens);
@@ -63,6 +64,7 @@ contract Tasks {
         require(tasks[_id].owner != address(0x0), 'Task does not exist');
 
         tasks[_id].hunters[msg.sender] = true;
+        tasks[_id].hunterCount = tasks[_id].hunterCount + 1;
         emit HunterAdded(_id, msg.sender);
     }
 
@@ -76,6 +78,7 @@ contract Tasks {
         require(tasks[_id].hunters[msg.sender], 'Hunter does not exist');
 
         tasks[_id].hunters[msg.sender] = false;
+        tasks[_id].hunterCount = tasks[_id].hunterCount - 1;
         emit HunterRemoved(_id, msg.sender);
     }
 
@@ -110,5 +113,6 @@ contract Tasks {
         public {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner == msg.sender, 'Invalid task');
+        require(tasks[_id].hunterCount == 0, 'We have hunters');
     }
 }

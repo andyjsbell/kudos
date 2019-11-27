@@ -267,7 +267,12 @@ contract("Tasks", async accounts => {
 
     it("should not be able to cancel a task which has active hunters", async function() {
 
-        assert(false, "failed");
+        await tasksInstance.addHunter(taskId, {from: taskHunter});
+        
+        let fn = tasksInstance.cancelTask(taskId, {from: taskOwner});
+
+        await truffleAssert.reverts(    fn, 
+                                        'We have hunters');
     });
 
     it("should be able to pause a task with hunters to request closure", async function() {

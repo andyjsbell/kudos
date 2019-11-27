@@ -21,14 +21,15 @@ contract Tasks {
     event HunterRemoved(bytes32 indexed task, address indexed hunter);
 
     mapping(bytes32 => Task) public tasks;
-
+    uint public timeoutInDays;
     KudosToken private kudos;
 
     /// @author Andy Bell andy.bell@displaynote.com
     /// @notice The Tasks contract
     /// @param _kudos Address to the Kudos token contract
-    constructor(KudosToken _kudos) public {
+    constructor(KudosToken _kudos, uint _timeoutInDays) public {
         kudos = _kudos;
+        timeoutInDays = _timeoutInDays;
     }
 
     /// @author Andy Bell andy.bell@displaynote.com
@@ -118,7 +119,7 @@ contract Tasks {
         public {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner == msg.sender, 'Invalid task');
-        bool expired = tasks[_id].created + 7 days < block.timestamp;
+        bool expired = tasks[_id].created + (timeoutInDays * days) < block.timestamp;
         require(expired || tasks[_id].hunterCount == 0, 'Unable as still valid');
 
         // Cancel task

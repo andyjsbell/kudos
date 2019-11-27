@@ -212,7 +212,7 @@ contract("Tasks", async accounts => {
                                         'Invalid id');
     });
 
-    it("should not be able to remove a hunter to a task that does not exist", async function() {
+    it("should not be able to remove a hunter from a task that does not exist", async function() {
 
         // Complete task
         let fn = tasksInstance.removeHunter(anotherTaskId, {from: taskHunter});
@@ -221,4 +221,12 @@ contract("Tasks", async accounts => {
                                         'Task does not exist');
     });
 
+    it("should not be able to remove a hunter from a task when the hunter isn't in the list", async function() {
+
+        // Complete task
+        let fn = tasksInstance.removeHunter(taskId, {from: taskHunter1});
+
+        await truffleAssert.reverts(    fn, 
+                                        'Hunter does not exist');
+    });
 });

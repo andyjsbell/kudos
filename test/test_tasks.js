@@ -1,7 +1,7 @@
 const Tasks = artifacts.require("./Tasks.sol");
 const KudosToken = artifacts.require("./KudosToken.sol");
 const truffleAssert = require('truffle-assertions');
-const { toBN, stringToHex, toWei } = web3.utils;
+const { toBN, stringToHex, toWei, keccak256 } = web3.utils;
 
 contract("Tasks", async accounts => {
 
@@ -11,9 +11,9 @@ contract("Tasks", async accounts => {
     let taskOwnerBalance, taskHunterBalance, taskHunter1Balance;
     const initialTokenBalance = 100;
     const tokensForTask = 50;
-    const taskId = '0x1';
-    const anotherTaskId = '0x2';
-    const invalidTaskId = '0x0';
+    const taskId = keccak256('task1');
+    const anotherTaskId = keccak256('task2');
+    const invalidTaskId = '0x0000000000000000000000000000000000000000';
     const invalidAddress = '0x0000000000000000000000000000000000000000';
 
     before("prepare some things", async function() {

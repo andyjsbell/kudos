@@ -87,6 +87,14 @@ contract Tasks {
         }
         require(payee != address(0x0), 'Invalid hunter');
 
-        emit TaskCompleted(_id, t.owner, _winner, 0);
+        uint tokensToTransfer = t.tokens;
+        tasks[_id].tokens = 0;
+        if (kudos.transfer(_winner, tokensToTransfer)) {
+            emit TaskCompleted(_id, t.owner, _winner, tokensToTransfer);
+        } else {
+            // Rewind.  I am thinking if we return false it is a revert which would wind this back anyhow.
+            // TODO - check this and remove line below if not needed
+            tasks[_id].tokens = tokensToTransfer;
+        }
     }
 }

@@ -172,7 +172,7 @@ contract("Tasks", async accounts => {
         assert.strictEqual(logTaskCompleted.args.task, taskId);
         assert.strictEqual(logTaskCompleted.args.owner, taskOwner);
         assert.strictEqual(logTaskCompleted.args.hunter, taskHunter);
-        assert.strictEqual(parseInt(logTaskCompleted.args.tokensTransferred.toString()), 0);
+        assert.strictEqual(parseInt(logTaskCompleted.args.tokensTransferred.toString()), tokensForTask);
         
     });
 });

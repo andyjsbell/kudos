@@ -28,6 +28,7 @@ contract("Tasks", async accounts => {
     const task1 = keccak256('task1');
     const task2 = keccak256('task2');
     const task3 = keccak256('task3');
+    const task4 = keccak256('task4');
     let timeoutInDays = 0;
     const invalidTaskId = '0x0000000000000000000000000000000000000000';
     const invalidAddress = '0x0000000000000000000000000000000000000000';
@@ -375,5 +376,29 @@ contract("Tasks", async accounts => {
         assert.strictEqual(logTaskCancelled.event, "TaskCancelled");
         assert.strictEqual(logTaskCancelled.args.task, task3);
         assert.strictEqual(logTaskCancelled.args.owner, taskOwner);
+    });
+
+    it("should not be able to create task when paused", async function() {
+
+        let txObj = await tasksInstance.pause({from: owner});
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logPaused = txObj.logs[0];
+        assert.strictEqual(logPaused.event, "Paused");
+
+        await truffleAssert.reverts(tasksInstance.createTask(task3, tokensForTask, {from: taskOwner}), 
+                                    'Pausable: paused');
+    });
+
+    it("should not be able to add a hunter task when paused", async function() {
+
+        await truffleAssert.reverts(tasksInstance.addHunter(task3, {from: taskOwner}), 
+                                    'Pausable: paused');
+    });
+
+    it("should not be able to complete task when paused", async function() {
+
+        await truffleAssert.reverts(tasksInstance.completeTask(task3, taskHunter, {from: taskOwner}), 
+                                    'Pausable: paused');
     });
 });

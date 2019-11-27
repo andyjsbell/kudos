@@ -1,10 +1,11 @@
 pragma solidity ^0.5.0;
 import './KudosToken.sol';
+import '@openzeppelin/contracts/lifecycle/Pausable.sol';
 
 /// @title A list of Tasks
 /// @author Andy Bell andy.bell@displaynote.com
 /// @notice You can use this contract to create and complete tasks set
-contract Tasks {
+contract Tasks is Pausable {
 
     struct Task {
         address owner;
@@ -29,7 +30,8 @@ contract Tasks {
     /// @notice The Tasks contract
     /// @param _kudos Address to the Kudos token contract
     /// @param _timeoutInDays Number of days before a task can be cancelled by owner
-    constructor(KudosToken _kudos, uint _timeoutInDays) public {
+    constructor(KudosToken _kudos, uint _timeoutInDays)
+        public {
         kudos = _kudos;
         timeoutInDays = _timeoutInDays;
     }
@@ -54,6 +56,7 @@ contract Tasks {
     /// @return boolean whether we succesfully transfer the tokens for the task
     function createTask(bytes32 _id, uint32 _tokens)
         public
+        whenNotPaused
         returns (bool) {
         require(_id[0] != 0, 'Invalid id');
         require(_tokens > 0, 'Send tokens');
@@ -78,7 +81,8 @@ contract Tasks {
     /// @notice Add caller as a hunter for the task
     /// @param _id A 32 character hash which would point to the task
     function addHunter(bytes32 _id)
-        public {
+        public
+        whenNotPaused {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner != address(0x0), 'Task does not exist');
         require(tasks[_id].tokens > 0, 'Task completed');
@@ -108,7 +112,8 @@ contract Tasks {
     /// @param _id A 32 character hash which would point to the task
     /// @param _winner Address of the hunter
     function completeTask(bytes32 _id, address _winner)
-        public {
+        public
+        whenNotPaused {
         Task storage t = tasks[_id];
         require(t.owner == msg.sender, 'Invalid task');
         require(_winner != address(0x0), 'Invalid hunter');

@@ -172,10 +172,14 @@ contract("Tasks", async accounts => {
 
     it("should be able to complete a task with valid hunter", async function() {
 
+        let balanceBeforeOfTaskHunterBN = await kudosTokenInstance.balanceOf(taskHunter);
+        let balanceBeforeOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
         // Add hunter
         let txObj = await tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
         
-
+        let balanceAfterOfTaskHunterBN = await kudosTokenInstance.balanceOf(taskHunter);
+        let balanceAfterOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
+        
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);
         const logTaskCompleted = txObj.logs[0];
@@ -185,5 +189,10 @@ contract("Tasks", async accounts => {
         assert.strictEqual(logTaskCompleted.args.hunter, taskHunter);
         assert.strictEqual(parseInt(logTaskCompleted.args.tokensTransferred.toString()), tokensForTask);
         
+        let diffTaskHunterBN = balanceAfterOfTaskHunterBN.sub(balanceBeforeOfTaskHunterBN);
+        let diffTaskContractBN = balanceBeforeOfTasksContractBN.sub(balanceAfterOfTasksContractBN);
+        
+        assert.strictEqual(diffTaskHunterBN.toString(), toBN(tokensForTask).toString());
+        assert.strictEqual(diffTaskContractBN.toString(), toBN(tokensForTask).toString());
     });
 });

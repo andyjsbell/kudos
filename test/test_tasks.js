@@ -212,6 +212,15 @@ contract("Tasks", async accounts => {
                                         'Task completed');
     });
 
+    it("should not be able to add a hunter when there are no tokens", async function() {
+
+        // Add hunter
+        let fn = tasksInstance.addHunter(taskId, {from: taskHunter});
+
+        await truffleAssert.reverts(    fn, 
+                                        'Task completed');
+    });
+
     it("should not be able to remove a hunter with an invalid task", async function() {
 
         // Remove hunter
@@ -276,9 +285,10 @@ contract("Tasks", async accounts => {
 
     it("should not be able to cancel a task which has active hunters", async function() {
 
-        await tasksInstance.addHunter(taskId, {from: taskHunter});
+        await tasksInstance.createTask(anotherTaskId,tokensForTask, {from:taskOwner});
+        await tasksInstance.addHunter(anotherTaskId, {from: taskHunter});
         
-        let fn = tasksInstance.cancelTask(taskId, {from: taskOwner});
+        let fn = tasksInstance.cancelTask(anotherTaskId, {from: taskOwner});
 
         await truffleAssert.reverts(    fn, 
                                         'We have hunters');

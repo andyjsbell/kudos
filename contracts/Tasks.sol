@@ -62,6 +62,7 @@ contract Tasks {
         public {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner != address(0x0), 'Task does not exist');
+        require(tasks[_id].tokens > 0, 'Task completed');
 
         tasks[_id].hunters[msg.sender] = true;
         tasks[_id].hunterCount = tasks[_id].hunterCount + 1;

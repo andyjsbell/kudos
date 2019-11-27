@@ -19,6 +19,7 @@ contract Tasks {
     event TaskCancelled(bytes32 indexed task, address indexed owner);
     event HunterAdded(bytes32 indexed task, address indexed hunter);
     event HunterRemoved(bytes32 indexed task, address indexed hunter);
+    event TimeoutChanged(uint beforeInDays, uint afterInDays);
 
     mapping(bytes32 => Task) public tasks;
     uint public timeoutInDays;
@@ -27,9 +28,23 @@ contract Tasks {
     /// @author Andy Bell andy.bell@displaynote.com
     /// @notice The Tasks contract
     /// @param _kudos Address to the Kudos token contract
+    /// @param _timeoutInDays Number of days before a task can be cancelled by owner
     constructor(KudosToken _kudos, uint _timeoutInDays) public {
         kudos = _kudos;
         timeoutInDays = _timeoutInDays;
+    }
+
+    /// @author Andy Bell andy.bell@displaynote.com
+    /// @notice Update timeout
+    /// @param _timeoutInDays Timeout in days
+    /// @return boolean whether updated
+    function setTimeoutInDays(uint _timeoutInDays)
+        public
+        returns (bool) {
+        require(_timeoutInDays < 60, 'More than 60 days');
+        emit TimeoutChanged(timeoutInDays, _timeoutInDays);
+        timeoutInDays = _timeoutInDays;
+        return true;
     }
 
     /// @author Andy Bell andy.bell@displaynote.com
@@ -119,7 +134,7 @@ contract Tasks {
         public {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner == msg.sender, 'Invalid task');
-        bool expired = tasks[_id].created + (timeoutInDays * days) < block.timestamp;
+        bool expired = tasks[_id].created + (timeoutInDays * 1 days) < block.timestamp;
         require(expired || tasks[_id].hunterCount == 0, 'Unable as still valid');
 
         // Cancel task

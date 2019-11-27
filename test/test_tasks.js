@@ -28,7 +28,7 @@ contract("Tasks", async accounts => {
     const task1 = keccak256('task1');
     const task2 = keccak256('task2');
     const task3 = keccak256('task3');
-    
+    let timeoutInDays = 0;
     const invalidTaskId = '0x0000000000000000000000000000000000000000';
     const invalidAddress = '0x0000000000000000000000000000000000000000';
 
@@ -48,6 +48,32 @@ contract("Tasks", async accounts => {
         assert.strictEqual(parseInt(taskOwnerBalance.toString()), initialTokenBalance);
         assert.strictEqual(parseInt(taskHunterBalance.toString()), initialTokenBalance);
         assert.strictEqual(parseInt(taskHunter1Balance.toString()), initialTokenBalance);
+    });
+
+    it("should be able to read timeout in days", async function() {
+        const timeout = await tasksInstance.timeoutInDays.call();
+        timeoutInDays = parseInt(timeout.toString());
+        assert.isTrue(timeoutInDays > 0);
+    });
+
+    it("should not be able to set a timeout greater than 60 days", async function() {
+
+        await truffleAssert.reverts(tasksInstance.setTimeoutInDays(61), 
+                                    'More than 60 days');
+    });
+
+    it("should be able to set timeout in days", async function() {
+        const newTimeoutInDays = 14; 
+        let txObj = await tasksInstance.setTimeoutInDays(newTimeoutInDays);
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logTimeoutChanged = txObj.logs[0];
+        assert.strictEqual(logTimeoutChanged.event, "TimeoutChanged");
+        assert.strictEqual(parseInt(logTimeoutChanged.args.beforeInDays.toString()), timeoutInDays);
+        assert.strictEqual(parseInt(logTimeoutChanged.args.afterInDays.toString()), newTimeoutInDays);
+        
+        timeoutInDays = await tasksInstance.timeoutInDays.call();
+        assert.isTrue(parseInt(timeoutInDays.toString()) == newTimeoutInDays);
     });
 
     it("should fail to create a task with invalid id", async function() {
@@ -341,7 +367,7 @@ contract("Tasks", async accounts => {
         assert.strictEqual(logTaskCreated.args.owner, taskOwner);
 
         // Jump forward a week
-        await timeTravel(86400 * 7); 
+        await timeTravel(86400 * timeoutInDays); 
         txObj = await tasksInstance.cancelTask(task3, {from: taskOwner});
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);

@@ -11,6 +11,7 @@ contract Tasks {
         uint tokens;
         mapping(address=>bool) hunters;
         uint hunterCount;
+        uint created;
     }
 
     event TaskCreated(bytes32 indexed task, address indexed owner, uint tokens);
@@ -47,6 +48,7 @@ contract Tasks {
         Task memory t;
         t.owner = msg.sender;
         t.tokens = _tokens;
+        t.created = block.timestamp;
         tasks[_id] = t;
 
         // Emit the event
@@ -116,7 +118,8 @@ contract Tasks {
         public {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner == msg.sender, 'Invalid task');
-        require(tasks[_id].hunterCount == 0, 'We have hunters');
+        bool expired = tasks[_id].created + 7 days < block.timestamp;
+        require(expired || tasks[_id].hunterCount == 0, 'Unable as still valid');
 
         // Cancel task
         uint tokensToTransfer = tasks[_id].tokens;

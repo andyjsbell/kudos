@@ -1,7 +1,21 @@
 const Tasks = artifacts.require("./Tasks.sol");
 const KudosToken = artifacts.require("./KudosToken.sol");
 const truffleAssert = require('truffle-assertions');
-const { toBN, stringToHex, toWei, keccak256 } = web3.utils;
+const { toBN, /*stringToHex, toWei,*/ keccak256 } = web3.utils;
+
+const timeTravel = function (time) {
+    return new Promise((resolve, reject) => {
+      web3.currentProvider.send({
+        jsonrpc: "2.0",
+        method: "evm_increaseTime",
+        params: [time], // 86400 is num seconds in day
+        id: new Date().getTime()
+      }, (err, result) => {
+        if(err){ return reject(err) }
+        return resolve(result)
+      });
+    })
+}
 
 contract("Tasks", async accounts => {
 
@@ -9,10 +23,12 @@ contract("Tasks", async accounts => {
     let kudosTokenInstance;
     let tasksInstance;
     let taskOwnerBalance, taskHunterBalance, taskHunter1Balance;
-    const initialTokenBalance = 100;
+    const initialTokenBalance = 1000;
     const tokensForTask = 50;
-    const taskId = keccak256('task1');
-    const anotherTaskId = keccak256('task2');
+    const task1 = keccak256('task1');
+    const task2 = keccak256('task2');
+    const task3 = keccak256('task3');
+    
     const invalidTaskId = '0x0000000000000000000000000000000000000000';
     const invalidAddress = '0x0000000000000000000000000000000000000000';
 
@@ -36,21 +52,21 @@ contract("Tasks", async accounts => {
 
     it("should fail to create a task with invalid id", async function() {
         
-        let fn = tasksInstance.createTask(invalidTaskId, initialTokenBalance, {from: taskOwner});
+        let fn = tasksInstance.createTask(invalidTaskId, tokensForTask, {from: taskOwner});
         
         await truffleAssert.reverts(    fn, 
                                         'Invalid id');
     });
   
     it("should not be able to create a task without tokens sent", async function() {
-        let fn = tasksInstance.createTask(taskId, 0, {from: taskOwner});
+        let fn = tasksInstance.createTask(task1, 0, {from: taskOwner});
         
         await truffleAssert.reverts(    fn, 
                                         'Send tokens');
     });
 
     it("should not be able to create a task without allowance set", async function() {
-        let fn = tasksInstance.createTask(taskId, initialTokenBalance, {from: taskOwner});
+        let fn = tasksInstance.createTask(task1, tokensForTask, {from: taskOwner});
         
         await truffleAssert.reverts(    fn, 
                                         'Insufficient allowance');
@@ -59,7 +75,7 @@ contract("Tasks", async accounts => {
     it("should be able to create a task with allowance set and tokens staked", async function() {
 
         // Approve from task owner tokens to be spent on their behalf, allowance has to be higher than that request
-        let txObj = await kudosTokenInstance.approve(tasksInstance.address, tokensForTask + 1, {from:taskOwner});
+        let txObj = await kudosTokenInstance.approve(tasksInstance.address, initialTokenBalance, {from:taskOwner});
 
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);
@@ -69,13 +85,13 @@ contract("Tasks", async accounts => {
         let balanceBeforeOfTaskOwnerBN = await kudosTokenInstance.balanceOf(taskOwner);
         let balanceBeforeOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
         // Create task
-        txObj = await tasksInstance.createTask(taskId, tokensForTask, {from: taskOwner});
+        txObj = await tasksInstance.createTask(task1, tokensForTask, {from: taskOwner});
 
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);
         const logTaskCreated = txObj.logs[0];
         assert.strictEqual(logTaskCreated.event, "TaskCreated");
-        assert.strictEqual(logTaskCreated.args.task, taskId);
+        assert.strictEqual(logTaskCreated.args.task, task1);
         assert.strictEqual(logTaskCreated.args.owner, taskOwner);
         assert.strictEqual(parseInt(logTaskCreated.args.tokens.toString()), tokensForTask);
 
@@ -92,16 +108,8 @@ contract("Tasks", async accounts => {
     
     it("should not be able to create a task with the same id twice, ever", async function() {
 
-        // Approve from task owner tokens to be spent on their behalf, allowance has to be higher than that request
-        let txObj = await kudosTokenInstance.approve(tasksInstance.address, tokensForTask + 1, {from:taskOwner});
-
-        assert.strictEqual(txObj.receipt.logs.length, 1);
-        assert.strictEqual(txObj.logs.length, 1);
-        const logApproval = txObj.logs[0];
-        assert.strictEqual(logApproval.event, "Approval");
-
         // Create task
-        let fn = tasksInstance.createTask(taskId, tokensForTask, {from: taskOwner});;
+        let fn = tasksInstance.createTask(task1, tokensForTask, {from: taskOwner});;
 
         await truffleAssert.reverts(    fn, 
                                         'Task exists');
@@ -111,7 +119,7 @@ contract("Tasks", async accounts => {
     it("should not be able to complete a task when there is no hunter", async function() {
 
         // Complete task
-        let fn = tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
+        let fn = tasksInstance.completeTask(task1, taskHunter, {from: taskOwner});
 
         await truffleAssert.reverts(    fn, 
                                         'No hunters');
@@ -129,7 +137,7 @@ contract("Tasks", async accounts => {
     it("should not be able to add a hunter to a task that does not exist", async function() {
 
         // Complete task
-        let fn = tasksInstance.addHunter(anotherTaskId, {from: taskHunter});
+        let fn = tasksInstance.addHunter(task2, {from: taskHunter});
 
         await truffleAssert.reverts(    fn, 
                                         'Task does not exist');
@@ -138,13 +146,13 @@ contract("Tasks", async accounts => {
     it("should be able to add a hunter to a task that does exist", async function() {
 
         // Add hunter
-        let txObj = await tasksInstance.addHunter(taskId, {from: taskHunter});
+        let txObj = await tasksInstance.addHunter(task1, {from: taskHunter});
         
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);
         const logHunterAdded = txObj.logs[0];
         assert.strictEqual(logHunterAdded.event, "HunterAdded");
-        assert.strictEqual(logHunterAdded.args.task, taskId);
+        assert.strictEqual(logHunterAdded.args.task, task1);
         assert.strictEqual(logHunterAdded.args.hunter, taskHunter);
     });
 
@@ -160,7 +168,7 @@ contract("Tasks", async accounts => {
     it("should not be able to complete a task when you are not the task owner", async function() {
 
         // Complete task
-        let fn = tasksInstance.completeTask(taskId, taskHunter, {from: taskHunter});
+        let fn = tasksInstance.completeTask(task1, taskHunter, {from: taskHunter});
 
         await truffleAssert.reverts(    fn, 
                                         'Invalid task');
@@ -169,7 +177,7 @@ contract("Tasks", async accounts => {
     it("should not be able to complete a task when there is an invalid hunter", async function() {
 
         // Complete task
-        let fn = tasksInstance.completeTask(taskId, invalidAddress, {from: taskOwner});
+        let fn = tasksInstance.completeTask(task1, invalidAddress, {from: taskOwner});
 
         await truffleAssert.reverts(    fn, 
                                         'Invalid hunter');
@@ -180,7 +188,7 @@ contract("Tasks", async accounts => {
         let balanceBeforeOfTaskHunterBN = await kudosTokenInstance.balanceOf(taskHunter);
         let balanceBeforeOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
         // Add hunter
-        let txObj = await tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
+        let txObj = await tasksInstance.completeTask(task1, taskHunter, {from: taskOwner});
         
         let balanceAfterOfTaskHunterBN = await kudosTokenInstance.balanceOf(taskHunter);
         let balanceAfterOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
@@ -189,7 +197,7 @@ contract("Tasks", async accounts => {
         assert.strictEqual(txObj.logs.length, 1);
         const logTaskCompleted = txObj.logs[0];
         assert.strictEqual(logTaskCompleted.event, "TaskCompleted");
-        assert.strictEqual(logTaskCompleted.args.task, taskId);
+        assert.strictEqual(logTaskCompleted.args.task, task1);
         assert.strictEqual(logTaskCompleted.args.owner, taskOwner);
         assert.strictEqual(logTaskCompleted.args.hunter, taskHunter);
         assert.strictEqual(parseInt(logTaskCompleted.args.tokensTransferred.toString()), tokensForTask);
@@ -206,7 +214,7 @@ contract("Tasks", async accounts => {
     it("should not be able to complete a task when there are no tokens", async function() {
 
         // Complete task
-        let fn = tasksInstance.completeTask(taskId, taskHunter, {from: taskOwner});
+        let fn = tasksInstance.completeTask(task1, taskHunter, {from: taskOwner});
 
         await truffleAssert.reverts(    fn, 
                                         'Task completed');
@@ -215,7 +223,7 @@ contract("Tasks", async accounts => {
     it("should not be able to add a hunter when there are no tokens", async function() {
 
         // Add hunter
-        let fn = tasksInstance.addHunter(taskId, {from: taskHunter});
+        let fn = tasksInstance.addHunter(task1, {from: taskHunter});
 
         await truffleAssert.reverts(    fn, 
                                         'Task completed');
@@ -233,7 +241,7 @@ contract("Tasks", async accounts => {
     it("should not be able to remove a hunter from a task that does not exist", async function() {
 
         // Remove hunter
-        let fn = tasksInstance.removeHunter(anotherTaskId, {from: taskHunter});
+        let fn = tasksInstance.removeHunter(task2, {from: taskHunter});
 
         await truffleAssert.reverts(    fn, 
                                         'Task does not exist');
@@ -242,7 +250,7 @@ contract("Tasks", async accounts => {
     it("should not be able to remove a hunter from a task when the hunter isn't in the list", async function() {
 
         // Remove hunter
-        let fn = tasksInstance.removeHunter(taskId, {from: taskHunter1});
+        let fn = tasksInstance.removeHunter(task1, {from: taskHunter1});
 
         await truffleAssert.reverts(    fn, 
                                         'Hunter does not exist');
@@ -251,12 +259,12 @@ contract("Tasks", async accounts => {
     it("should be able to remove a hunter from a task when the hunter is in the list", async function() {
 
         // Remove hunter
-        let txObj = await tasksInstance.removeHunter(taskId, {from: taskHunter});
+        let txObj = await tasksInstance.removeHunter(task1, {from: taskHunter});
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);
         const logHunterRemoved = txObj.logs[0];
         assert.strictEqual(logHunterRemoved.event, "HunterRemoved");
-        assert.strictEqual(logHunterRemoved.args.task, taskId);
+        assert.strictEqual(logHunterRemoved.args.task, task1);
         assert.strictEqual(logHunterRemoved.args.hunter, taskHunter);
     });
 
@@ -269,7 +277,7 @@ contract("Tasks", async accounts => {
 
     it("should not be able to cancel a task which does not exist", async function() {
 
-        let fn = tasksInstance.cancelTask(anotherTaskId, {from: taskHunter});
+        let fn = tasksInstance.cancelTask(task2, {from: taskHunter});
 
         await truffleAssert.reverts(    fn, 
                                         'Invalid task');
@@ -277,7 +285,7 @@ contract("Tasks", async accounts => {
 
     it("should not be able to cancel a task which if you are not the owner", async function() {
 
-        let fn = tasksInstance.cancelTask(taskId, {from: taskHunter});
+        let fn = tasksInstance.cancelTask(task1, {from: taskHunter});
 
         await truffleAssert.reverts(    fn, 
                                         'Invalid task');
@@ -285,23 +293,23 @@ contract("Tasks", async accounts => {
 
     it("should not be able to cancel a task which has active hunters", async function() {
 
-        await tasksInstance.createTask(anotherTaskId,tokensForTask, {from:taskOwner});
-        await tasksInstance.addHunter(anotherTaskId, {from: taskHunter});
+        await tasksInstance.createTask(task2, tokensForTask, {from:taskOwner});
+        await tasksInstance.addHunter(task2, {from: taskHunter});
         
-        let fn = tasksInstance.cancelTask(anotherTaskId, {from: taskOwner});
+        let fn = tasksInstance.cancelTask(task2, {from: taskOwner});
 
         await truffleAssert.reverts(    fn, 
-                                        'We have hunters');
+                                        'Unable as still valid');
     });
 
     it("should be able to cancel a task with no hunters", async function() {
 
-        await tasksInstance.removeHunter(anotherTaskId, {from: taskHunter});
+        await tasksInstance.removeHunter(task2, {from: taskHunter});
 
         let balanceBeforeOfTaskOwnerBN = await kudosTokenInstance.balanceOf(taskOwner);
         let balanceBeforeOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
         
-        let txObj = await tasksInstance.cancelTask(anotherTaskId, {from: taskOwner});
+        let txObj = await tasksInstance.cancelTask(task2, {from: taskOwner});
 
         let balanceAfterOfTaskOwnerBN = await kudosTokenInstance.balanceOf(taskOwner);
         let balanceAfterOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
@@ -310,7 +318,7 @@ contract("Tasks", async accounts => {
         assert.strictEqual(txObj.logs.length, 1);
         const logTaskCancelled = txObj.logs[0];
         assert.strictEqual(logTaskCancelled.event, "TaskCancelled");
-        assert.strictEqual(logTaskCancelled.args.task, anotherTaskId);
+        assert.strictEqual(logTaskCancelled.args.task, task2);
         assert.strictEqual(logTaskCancelled.args.owner, taskOwner);
 
         // Owner should get stake back
@@ -324,6 +332,22 @@ contract("Tasks", async accounts => {
 
     it("should be able to cancel a task which has reached its timeout", async function() {
 
-        assert(false, "failed");
+        let txObj = await tasksInstance.createTask(task3, tokensForTask, {from: taskOwner});
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logTaskCreated = txObj.logs[0];
+        assert.strictEqual(logTaskCreated.event, "TaskCreated");
+        assert.strictEqual(logTaskCreated.args.task, task3);
+        assert.strictEqual(logTaskCreated.args.owner, taskOwner);
+
+        // Jump forward a week
+        await timeTravel(86400 * 7); 
+        txObj = await tasksInstance.cancelTask(task3, {from: taskOwner});
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logTaskCancelled = txObj.logs[0];
+        assert.strictEqual(logTaskCancelled.event, "TaskCancelled");
+        assert.strictEqual(logTaskCancelled.args.task, task3);
+        assert.strictEqual(logTaskCancelled.args.owner, taskOwner);
     });
 });

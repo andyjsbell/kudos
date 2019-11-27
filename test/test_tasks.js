@@ -42,6 +42,13 @@ contract("Tasks", async accounts => {
                                         'Invalid id');
     });
   
+    it("should not be able to create a task without tokens sent", async function() {
+        let fn = tasksInstance.createTask(taskId, 0, {from: taskOwner});
+        
+        await truffleAssert.reverts(    fn, 
+                                        'Send tokens');
+    });
+
     it("should not be able to create a task without allowance set", async function() {
         let fn = tasksInstance.createTask(taskId, initialTokenBalance, {from: taskOwner});
         
@@ -141,4 +148,6 @@ contract("Tasks", async accounts => {
         await truffleAssert.reverts(    fn, 
                                         'Invalid hunter');
     });
+
+
 });

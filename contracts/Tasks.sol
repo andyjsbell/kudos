@@ -35,6 +35,7 @@ contract Tasks {
         public
         returns (bool) {
         require(_id[0] != 0, 'Invalid id');
+        require(_tokens > 0, 'Send tokens');
         require(tasks[_id].owner == address(0x0), 'Task exists');
         require(kudos.allowance(msg.sender, address(this)) > _tokens, 'Insufficient allowance');
 
@@ -70,7 +71,7 @@ contract Tasks {
         require(tasks[_id].owner == msg.sender, 'Invalid task');
         require(_winner != address(0x0), 'Invalid hunter');
         require(tasks[_id].hunters.length > 0, 'No hunters');
-        
+
         uint len = tasks[_id].hunters.length;
         address payee = address(0x0);
         for (uint i = 0; i < len; i++) {

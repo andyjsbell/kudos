@@ -297,13 +297,29 @@ contract("Tasks", async accounts => {
     it("should be able to cancel a task with no hunters", async function() {
 
         await tasksInstance.removeHunter(anotherTaskId, {from: taskHunter});
+
+        let balanceBeforeOfTaskOwnerBN = await kudosTokenInstance.balanceOf(taskOwner);
+        let balanceBeforeOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
+        
         let txObj = await tasksInstance.cancelTask(anotherTaskId, {from: taskOwner});
+
+        let balanceAfterOfTaskOwnerBN = await kudosTokenInstance.balanceOf(taskOwner);
+        let balanceAfterOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);
+        
         assert.strictEqual(txObj.receipt.logs.length, 1);
         assert.strictEqual(txObj.logs.length, 1);
         const logTaskCancelled = txObj.logs[0];
         assert.strictEqual(logTaskCancelled.event, "TaskCancelled");
         assert.strictEqual(logTaskCancelled.args.task, anotherTaskId);
         assert.strictEqual(logTaskCancelled.args.owner, taskOwner);
+
+        // Owner should get stake back
+        let diffTaskOwnerBN = balanceAfterOfTaskOwnerBN.sub(balanceBeforeOfTaskOwnerBN);
+        // Contract should pay back stake
+        let diffTaskContractBN = balanceBeforeOfTasksContractBN.sub(balanceAfterOfTasksContractBN);
+        
+        assert.strictEqual(diffTaskOwnerBN.toString(), toBN(tokensForTask).toString());
+        assert.strictEqual(diffTaskContractBN.toString(), toBN(tokensForTask).toString());
     });
 
     it("should be able to cancel a task which has reached its timeout", async function() {

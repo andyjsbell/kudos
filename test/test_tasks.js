@@ -205,7 +205,7 @@ contract("Tasks", async accounts => {
 
     it("should not be able to remove a hunter with an invalid task", async function() {
 
-        // Complete task
+        // Remove hunter
         let fn = tasksInstance.removeHunter(invalidTaskId, {from: taskHunter});
 
         await truffleAssert.reverts(    fn, 
@@ -214,7 +214,7 @@ contract("Tasks", async accounts => {
 
     it("should not be able to remove a hunter from a task that does not exist", async function() {
 
-        // Complete task
+        // Remove hunter
         let fn = tasksInstance.removeHunter(anotherTaskId, {from: taskHunter});
 
         await truffleAssert.reverts(    fn, 
@@ -223,10 +223,22 @@ contract("Tasks", async accounts => {
 
     it("should not be able to remove a hunter from a task when the hunter isn't in the list", async function() {
 
-        // Complete task
+        // Remove hunter
         let fn = tasksInstance.removeHunter(taskId, {from: taskHunter1});
 
         await truffleAssert.reverts(    fn, 
                                         'Hunter does not exist');
+    });
+
+    it("should be able to remove a hunter from a task when the hunter is in the list", async function() {
+
+        // Remove hunter
+        let txObj = await tasksInstance.removeHunter(taskId, {from: taskHunter});
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logHunterRemoved = txObj.logs[0];
+        assert.strictEqual(logHunterRemoved.event, "HunterRemoved");
+        assert.strictEqual(logHunterRemoved.args.task, taskId);
+        assert.strictEqual(logHunterRemoved.args.hunter, taskHunter);
     });
 });

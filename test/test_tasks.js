@@ -75,6 +75,9 @@ contract("Tasks", async accounts => {
         assert.strictEqual(txObj.logs.length, 1);
         const logTaskCreated = txObj.logs[0];
         assert.strictEqual(logTaskCreated.event, "TaskCreated");
+        assert.strictEqual(logTaskCreated.args.task, taskId);
+        assert.strictEqual(logTaskCreated.args.owner, taskOwner);
+        assert.strictEqual(parseInt(logTaskCreated.args.tokens.toString()), tokensForTask);
 
         let balanceAfterOfTaskOwnerBN = await kudosTokenInstance.balanceOf(taskOwner);
         let balanceAfterOfTasksContractBN = await kudosTokenInstance.balanceOf(tasksInstance.address);

@@ -12,7 +12,7 @@ contract Tasks {
         address[] hunters;
     }
 
-    event TaskCreated(address indexed creator, uint indexed tokens);
+    event TaskCreated(bytes32 indexed task, address indexed owner, uint tokens);
     event TaskCompleted(bytes32 indexed task, address indexed owner, address indexed hunter, uint tokensTransferred);
     event HunterAdded(bytes32 indexed task, address indexed hunter);
 
@@ -47,7 +47,7 @@ contract Tasks {
         tasks[_id] = t;
 
         // Emit the event
-        emit TaskCreated(msg.sender, _tokens);
+        emit TaskCreated(_id, msg.sender, _tokens);
 
         // Stake tokens
         return kudos.transferFrom(msg.sender, address(this), _tokens);

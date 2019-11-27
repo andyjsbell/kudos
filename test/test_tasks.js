@@ -401,4 +401,13 @@ contract("Tasks", async accounts => {
         await truffleAssert.reverts(tasksInstance.completeTask(task3, taskHunter, {from: taskOwner}), 
                                     'Pausable: paused');
     });
+
+    it("should be able to get a list of all tasks", async function() {
+        assert.isTrue(false);
+    });
+
+    it("should be able to get a list of all my tasks", async function() {
+        assert.isTrue(false);
+    });
+
 });

@@ -241,4 +241,39 @@ contract("Tasks", async accounts => {
         assert.strictEqual(logHunterRemoved.args.task, taskId);
         assert.strictEqual(logHunterRemoved.args.hunter, taskHunter);
     });
+
+    it("should not be able to cancel a task with an invalid id", async function() {
+
+        assert(false, "failed");
+    });
+
+    it("should not be able to cancel a task which does not exist", async function() {
+
+        assert(false, "failed");
+    });
+
+    it("should not be able to cancel a task which if you are not the owner", async function() {
+
+        assert(false, "failed");
+    });
+
+    it("should not be able to cancel a task which has active hunters", async function() {
+
+        assert(false, "failed");
+    });
+
+    it("should be able to pause a task with hunters to request closure", async function() {
+
+        assert(false, "failed");
+    });
+
+    it("should be able to cancel a task with no hunters", async function() {
+
+        assert(false, "failed");
+    });
+
+    it("should be able to cancel a task which has reached its timeout", async function() {
+
+        assert(false, "failed");
+    });
 });

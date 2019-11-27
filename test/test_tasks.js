@@ -296,7 +296,14 @@ contract("Tasks", async accounts => {
 
     it("should be able to cancel a task with no hunters", async function() {
 
-        assert(false, "failed");
+        await tasksInstance.removeHunter(anotherTaskId, {from: taskHunter});
+        let txObj = await tasksInstance.cancelTask(anotherTaskId, {from: taskOwner});
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logTaskCancelled = txObj.logs[0];
+        assert.strictEqual(logTaskCancelled.event, "TaskCancelled");
+        assert.strictEqual(logTaskCancelled.args.task, anotherTaskId);
+        assert.strictEqual(logTaskCancelled.args.owner, taskOwner);
     });
 
     it("should be able to cancel a task which has reached its timeout", async function() {

@@ -15,6 +15,7 @@ contract Tasks {
 
     event TaskCreated(bytes32 indexed task, address indexed owner, uint tokens);
     event TaskCompleted(bytes32 indexed task, address indexed owner, address indexed hunter, uint tokensTransferred);
+    event TaskCancelled(bytes32 indexed task, address indexed owner);
     event HunterAdded(bytes32 indexed task, address indexed hunter);
     event HunterRemoved(bytes32 indexed task, address indexed hunter);
 
@@ -116,5 +117,11 @@ contract Tasks {
         require(_id[0] != 0, 'Invalid id');
         require(tasks[_id].owner == msg.sender, 'Invalid task');
         require(tasks[_id].hunterCount == 0, 'We have hunters');
+
+        // Cancel task
+        uint tokensToTransfer = tasks[_id].tokens;
+        tasks[_id].tokens = 0;
+        emit TaskCancelled(_id, msg.sender);
+        kudos.transfer(msg.sender, tokensToTransfer);
     }
 }

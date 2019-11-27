@@ -109,5 +109,6 @@ contract Tasks {
     function cancelTask(bytes32 _id)
         public {
         require(_id[0] != 0, 'Invalid id');
+        require(tasks[_id].owner == msg.sender, 'Invalid task');
     }
 }

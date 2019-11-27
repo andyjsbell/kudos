@@ -202,4 +202,23 @@ contract("Tasks", async accounts => {
         assert.strictEqual(diffTaskHunterBN.toString(), toBN(tokensForTask).toString());
         assert.strictEqual(diffTaskContractBN.toString(), toBN(tokensForTask).toString());
     });
+
+    it("should not be able to remove a hunter with an invalid task", async function() {
+
+        // Complete task
+        let fn = tasksInstance.removeHunter(invalidTaskId, {from: taskHunter});
+
+        await truffleAssert.reverts(    fn, 
+                                        'Invalid id');
+    });
+
+    it("should not be able to remove a hunter to a task that does not exist", async function() {
+
+        // Complete task
+        let fn = tasksInstance.removeHunter(anotherTaskId, {from: taskHunter});
+
+        await truffleAssert.reverts(    fn, 
+                                        'Task does not exist');
+    });
+
 });

@@ -15,6 +15,7 @@ contract Tasks {
     event TaskCreated(bytes32 indexed task, address indexed owner, uint tokens);
     event TaskCompleted(bytes32 indexed task, address indexed owner, address indexed hunter, uint tokensTransferred);
     event HunterAdded(bytes32 indexed task, address indexed hunter);
+    event HunterRemoved(bytes32 indexed task, address indexed hunter);
 
     mapping(bytes32 => Task) public tasks;
 
@@ -63,6 +64,19 @@ contract Tasks {
 
         tasks[_id].hunters[msg.sender] = true;
         emit HunterAdded(_id, msg.sender);
+    }
+
+    /// @author Andy Bell andy.bell@displaynote.com
+    /// @notice Remove caller as a hunter for the task
+    /// @param _id A 32 character hash which would point to the task
+    function removeHunter(bytes32 _id)
+        public {
+        require(_id[0] != 0, 'Invalid id');
+        require(tasks[_id].owner != address(0x0), 'Task does not exist');
+        require(tasks[_id].hunters[msg.sender], 'Hunter does not exist');
+
+        tasks[_id].hunters[msg.sender] = false;
+        emit HunterRemoved(_id, msg.sender);
     }
 
     /// @author Andy Bell andy.bell@displaynote.com

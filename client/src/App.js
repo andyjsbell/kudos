@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import './App.css';
 import getWeb3 from "./utils/getWeb3";
 import 'semantic-ui-css/semantic.min.css';
@@ -8,6 +8,23 @@ import Tasks from './contracts/Tasks.json'
 // web3 https://github.com/ethereum/wiki/wiki/JavaScript-API
 const Web3 = require('web3');
 
+const Wallet = (props) => {
+  const [balance, setBalance] = useState('0');
+  
+  useEffect(() => {
+    const account = props.accounts[0];
+    props.kudos.balanceOf(account, function(error, result) {
+      setBalance(result.toString());
+    });
+  }, []);
+
+  return(
+    <>
+      <h1>Wallet</h1>
+      <h4>Your Kudos balance is: {balance} tokens</h4>
+    </>
+  );
+};
 class App extends Component {
 
   state = {web3: null, accounts: [], kudos: null, tasks: null};
@@ -54,6 +71,7 @@ class App extends Component {
     return (
       <>
         <h1>Welcome to Kudos!</h1>
+        <Wallet {...this.state}/>
       </>
     );
   }

@@ -50,7 +50,7 @@ const TaskList = (props) => {
 
   return(
     <>
-    <h3>Tasks</h3>
+    <h1>Tasks</h1>
     {tasks && tasks.length > 0 ?
       <Table celled>
         <Table.Header>

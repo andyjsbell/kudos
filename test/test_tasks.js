@@ -426,4 +426,12 @@ contract("Tasks", async accounts => {
         let events = await tasksInstance.getPastEvents('HunterAdded', {fromBlock:0, toBlock:'latest', filter:{hunter:taskHunter}});        
         assert.isTrue(events.length > 0);
     });
+
+    it("should be able as a hunter to see the tasks I am hunting and which are still valid as I haven´t dropped them", async function() {
+        let addedEvents = await tasksInstance.getPastEvents('HunterAdded', {fromBlock:0, toBlock:'latest', filter:{hunter:taskHunter}});        
+        assert.isTrue(addedEvents.length > 0);
+        let removedEvents = await tasksInstance.getPastEvents('HunterRemoved', {fromBlock:0, toBlock:'latest', filter:{hunter:taskHunter}});        
+        assert.isTrue(removedEvents.length > 0);
+        assert.isTrue(addedEvents.length >= removedEvents.length);  
+    });
 });

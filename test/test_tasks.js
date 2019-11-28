@@ -434,4 +434,9 @@ contract("Tasks", async accounts => {
         assert.isTrue(removedEvents.length > 0);
         assert.isTrue(addedEvents.length >= removedEvents.length);  
     });
+
+    it("should be able as a hunter know which tasks that I won", async function() {
+        let wonEvents = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:0, toBlock:'latest', filter:{winner:taskHunter}});        
+        assert.isTrue(wonEvents.length > 0);
+    });
 });

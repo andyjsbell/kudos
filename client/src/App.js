@@ -74,6 +74,13 @@ const TaskList = (props) => {
   );
 };
 
+const TaskEntry = (props) => {
+  return (
+    <>
+      <h3>Task Entry</h3>
+    </>
+  );
+};
 class App extends Component {
 
   state = {web3: null, accounts: [], kudos: null, tasks: null};
@@ -121,6 +128,7 @@ class App extends Component {
       <>
         <h1>Welcome to Kudos!</h1>
         <Wallet {...this.state}/>
+        <TaskEntry {...this.state}/>
         <TaskList {...this.state}/>
       </>
     );

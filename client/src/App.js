@@ -79,6 +79,7 @@ const TaskEntry = (props) => {
   
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [kudos, setKudos] = useState(0);
 
   return (
     <>
@@ -91,6 +92,10 @@ const TaskEntry = (props) => {
         <Form.Field>
           <Label>Description</Label>
           <Input placeholder='Description for the task' onChange={e => setDescription(e.target.value)}></Input>
+        </Form.Field>
+        <Form.Field>
+          <Label>Kudos</Label>
+          <Input placeholder='Number of Kudos' onChange={e => setKudos(e.target.value)}></Input>
         </Form.Field>
       </Form>
     </>

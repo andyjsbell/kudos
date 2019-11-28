@@ -12,6 +12,7 @@ const Wallet = (props) => {
   const [balance, setBalance] = useState('0');
   const account = props.accounts[0];
   const [allowance, setAllowance] = useState('0');
+  const [proposedIncreaseOfAllowance, setProposedIncreaseOfAllowance] = useState('0');
   
   useEffect(() => {
     props.kudos.balanceOf(account, function(error, result) {
@@ -25,7 +26,15 @@ const Wallet = (props) => {
   }, []);
 
   const updateAllowance = () => {
-
+    props.kudos.increaseAllowance(props.tasks.address, parseInt(proposedIncreaseOfAllowance), {from: account}, function(error, result) {
+      if(error) {
+        console.log(error);
+      } else {
+        props.kudos.allowance(account, props.tasks.address, function(error, result) {
+          setAllowance(result.toString());
+        });
+      }
+    });
   };
 
   return(
@@ -37,7 +46,7 @@ const Wallet = (props) => {
       <Form>
         <Form.Field>
           <Label>Kudos</Label>
-          <Input placeholder='Number of Kudos' onChange={e => setAllowance(e.target.value)}></Input>
+          <Input placeholder='Number of Kudos' onChange={e => setProposedIncreaseOfAllowance(e.target.value)}></Input>
         </Form.Field>
         <Button primary onClick={() => updateAllowance()}>Update Allowance</Button>
       </Form>

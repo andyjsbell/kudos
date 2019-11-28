@@ -32,6 +32,7 @@ contract("Tasks", async accounts => {
     let timeoutInDays = 0;
     const invalidTaskId = '0x0000000000000000000000000000000000000000';
     const invalidAddress = '0x0000000000000000000000000000000000000000';
+    let blockNumber = 0;
 
     before("prepare some things", async function() {
         
@@ -41,6 +42,8 @@ contract("Tasks", async accounts => {
         await kudosTokenInstance.transfer(taskOwner, initialTokenBalance, {from: owner});
         await kudosTokenInstance.transfer(taskHunter, initialTokenBalance, {from: owner});
         await kudosTokenInstance.transfer(taskHunter1, initialTokenBalance, {from: owner});
+        
+        blockNumber = await web3.eth.getBlockNumber();
         
         taskOwnerBalance = await kudosTokenInstance.balanceOf(taskOwner);
         taskHunterBalance = await kudosTokenInstance.balanceOf(taskHunter);
@@ -403,40 +406,40 @@ contract("Tasks", async accounts => {
     });
 
     it("should be able to get a list of all created tasks", async function() {
-        let events = await tasksInstance.getPastEvents('TaskCreated', {fromBlock:0, toBlock:'latest'});
+        let events = await tasksInstance.getPastEvents('TaskCreated', {fromBlock:blockNumber, toBlock:'latest'});
         assert.isTrue(events.length > 0);
     });
 
     it("should be able to get a list of all completed tasks", async function() {
-        let events = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:0, toBlock:'latest'});
+        let events = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:blockNumber, toBlock:'latest'});
         assert.isTrue(events.length > 0);
     });
 
     it("should be able to get a list of all my created tasks", async function() {
-        let events = await tasksInstance.getPastEvents('TaskCreated', {fromBlock:0, toBlock:'latest', filter:{owner:taskOwner}});        
+        let events = await tasksInstance.getPastEvents('TaskCreated', {fromBlock:blockNumber, toBlock:'latest', filter:{owner:taskOwner}});        
         assert.isTrue(events.length > 0);
     });
 
     it("should be able to get a list of all my completed tasks", async function() {
-        let events = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:0, toBlock:'latest', filter:{owner:taskOwner}});        
+        let events = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:blockNumber, toBlock:'latest', filter:{owner:taskOwner}});        
         assert.isTrue(events.length > 0);
     });
 
     it("should be able as a hunter to see the tasks I am hunting", async function() {
-        let events = await tasksInstance.getPastEvents('HunterAdded', {fromBlock:0, toBlock:'latest', filter:{hunter:taskHunter}});        
+        let events = await tasksInstance.getPastEvents('HunterAdded', {fromBlock:blockNumber, toBlock:'latest', filter:{hunter:taskHunter}});        
         assert.isTrue(events.length > 0);
     });
 
     it("should be able as a hunter to see the tasks I am hunting and which are still valid as I haven´t dropped them", async function() {
-        let addedEvents = await tasksInstance.getPastEvents('HunterAdded', {fromBlock:0, toBlock:'latest', filter:{hunter:taskHunter}});        
+        let addedEvents = await tasksInstance.getPastEvents('HunterAdded', {fromBlock:blockNumber, toBlock:'latest', filter:{hunter:taskHunter}});        
         assert.isTrue(addedEvents.length > 0);
-        let removedEvents = await tasksInstance.getPastEvents('HunterRemoved', {fromBlock:0, toBlock:'latest', filter:{hunter:taskHunter}});        
+        let removedEvents = await tasksInstance.getPastEvents('HunterRemoved', {fromBlock:blockNumber, toBlock:'latest', filter:{hunter:taskHunter}});        
         assert.isTrue(removedEvents.length > 0);
         assert.isTrue(addedEvents.length >= removedEvents.length);  
     });
 
     it("should be able as a hunter know which tasks that I won", async function() {
-        let wonEvents = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:0, toBlock:'latest', filter:{winner:taskHunter}});        
+        let wonEvents = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:blockNumber, toBlock:'latest', filter:{winner:taskHunter}});        
         assert.isTrue(wonEvents.length > 0);
     });
 });

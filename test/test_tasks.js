@@ -412,8 +412,8 @@ contract("Tasks", async accounts => {
         assert.isTrue(events.length > 0);
     });
 
-    it("should be able to get a list of all my running tasks", async function() {
-        assert.isTrue(false);
+        let events = await tasksInstance.getPastEvents('TaskCreated', {fromBlock:0, toBlock:'latest', filter:{owner:taskOwner}});        
+        assert.isTrue(events.length > 0);
     });
 
     it("should be able to get a list of all my completed tasks", async function() {

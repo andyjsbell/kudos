@@ -10,9 +10,9 @@ const Web3 = require('web3');
 
 const Wallet = (props) => {
   const [balance, setBalance] = useState('0');
+  const account = props.accounts[0];
   
   useEffect(() => {
-    const account = props.accounts[0];
     props.kudos.balanceOf(account, function(error, result) {
       setBalance(result.toString());
     });
@@ -21,6 +21,7 @@ const Wallet = (props) => {
   return(
     <>
       <h1>Wallet</h1>
+      <h4>Hi '{account}'</h4>
       <h4>Your Kudos balance is: {balance} tokens</h4>
     </>
   );

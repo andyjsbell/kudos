@@ -402,8 +402,9 @@ contract("Tasks", async accounts => {
                                     'Pausable: paused');
     });
 
-    it("should be able to get a list of all running tasks", async function() {
-        assert.isTrue(false);
+    it("should be able to get a list of all created tasks", async function() {
+        let events = await tasksInstance.getPastEvents('TaskCreated', {fromBlock:0, toBlock:'latest'});
+        assert.isTrue(events.length > 0);
     });
 
     it("should be able to get a list of all completed tasks", async function() {

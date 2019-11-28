@@ -421,4 +421,9 @@ contract("Tasks", async accounts => {
         let events = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:0, toBlock:'latest', filter:{owner:taskOwner}});        
         assert.isTrue(events.length > 0);
     });
+
+    it("should be able as a hunter to see the tasks I am hunting", async function() {
+        let events = await tasksInstance.getPastEvents('HunterAdded', {fromBlock:0, toBlock:'latest', filter:{hunter:taskHunter}});        
+        assert.isTrue(events.length > 0);
+    });
 });

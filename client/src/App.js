@@ -82,9 +82,14 @@ const TaskEntry = (props) => {
   const [kudos, setKudos] = useState(0);
   const account = props.accounts[0];
 
-  const createTask = async () => {
-    // let txObj = await props.tasks.createTask(props.web3.sha3(name), kudos, {from: account});
-    // console.log(txObj);
+  const createTask = () => {
+    props.tasks.createTask(props.web3.sha3(name), kudos, {from: account}, (err, result) => {
+      if(err) {
+        console.error(err);
+      } else {
+        console.log(result);
+      }
+    });
   };
 
   return (

@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import './App.css';
 import getWeb3 from "./utils/getWeb3";
 import 'semantic-ui-css/semantic.min.css';
-import { Table, Button, Input, Label } from 'semantic-ui-react';
+import { Table, Button, Input, Label, Form } from 'semantic-ui-react';
 import KudosToken from './contracts/KudosToken.json'
 import Tasks from './contracts/Tasks.json'
 // web3 https://github.com/ethereum/wiki/wiki/JavaScript-API
@@ -78,11 +78,21 @@ const TaskList = (props) => {
 const TaskEntry = (props) => {
   
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
   return (
     <>
       <h1>Task Entry:</h1>
-      <Input placeholder='Name for the task' onChange={e => setName(e.target.value)}></Input>
+      <Form>
+        <Form.Field>
+          <Label>Name</Label>
+          <Input placeholder='Name for the task' onChange={e => setName(e.target.value)}></Input>
+        </Form.Field>
+        <Form.Field>
+          <Label>Description</Label>
+          <Input placeholder='Description for the task' onChange={e => setDescription(e.target.value)}></Input>
+        </Form.Field>
+      </Form>
     </>
   );
 };

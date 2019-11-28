@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import './App.css';
 import getWeb3 from "./utils/getWeb3";
 import 'semantic-ui-css/semantic.min.css';
-// import { Button, Input } from 'semantic-ui-react';
+import { Table, Button, Input } from 'semantic-ui-react';
 import KudosToken from './contracts/KudosToken.json'
 import Tasks from './contracts/Tasks.json'
 // web3 https://github.com/ethereum/wiki/wiki/JavaScript-API
@@ -25,6 +25,55 @@ const Wallet = (props) => {
     </>
   );
 };
+
+const TaskList = (props) => {
+  const [tasks, setTasks] = useState([]);
+  let tmpTasks = [];
+  useEffect(() => {
+
+    props.tasks.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
+      
+      tmpTasks = [...tmpTasks, 
+                  { id: tmpTasks.length,
+                    value: {  
+                      task: result.args.task, 
+                      owner: result.args.owner,
+                      tokens: result.args.tokens.toString()
+                    }
+                  }];
+      
+      setTasks(tmpTasks);
+    });
+
+  }, []);
+
+  return(
+    <>
+    <h3>Tasks</h3>
+    {tasks && tasks.length > 0 ?
+      <Table celled>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Task</Table.HeaderCell>
+            <Table.HeaderCell>Owner</Table.HeaderCell>
+            <Table.HeaderCell>Tokens</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {tasks.map(row => (
+            <Table.Row key={row.id}>
+              <Table.Cell align="left">{row.value.task}</Table.Cell>
+              <Table.Cell align="left">{row.value.owner}</Table.Cell>
+              <Table.Cell align="left">{row.value.tokens}</Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
+    : null}
+    </>
+  );
+};
+
 class App extends Component {
 
   state = {web3: null, accounts: [], kudos: null, tasks: null};
@@ -72,6 +121,7 @@ class App extends Component {
       <>
         <h1>Welcome to Kudos!</h1>
         <Wallet {...this.state}/>
+        <TaskList {...this.state}/>
       </>
     );
   }

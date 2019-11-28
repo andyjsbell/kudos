@@ -11,18 +11,36 @@ const Web3 = require('web3');
 const Wallet = (props) => {
   const [balance, setBalance] = useState('0');
   const account = props.accounts[0];
+  const [allowance, setAllowance] = useState('0');
   
   useEffect(() => {
     props.kudos.balanceOf(account, function(error, result) {
       setBalance(result.toString());
     });
+
+    props.kudos.allowance(account, props.tasks.address, function(error, result) {
+      setAllowance(result.toString());
+    });
+
   }, []);
+
+  const updateAllowance = () => {
+
+  };
 
   return(
     <>
       <h1>Wallet</h1>
       <h4>Account: '{account}'</h4>
       <h4>Your Kudos balance is: {balance} tokens</h4>
+      <h4>Tasks has an allowance of: {allowance} tokens</h4>
+      <Form>
+        <Form.Field>
+          <Label>Kudos</Label>
+          <Input placeholder='Number of Kudos' onChange={e => setAllowance(e.target.value)}></Input>
+        </Form.Field>
+        <Button primary onClick={() => updateAllowance()}>Update Allowance</Button>
+      </Form>
     </>
   );
 };
@@ -83,6 +101,9 @@ const TaskEntry = (props) => {
   const account = props.accounts[0];
 
   const createTask = () => {
+    // TODO Check allowance
+
+    // TODO Create off chain meta information, IPFS
     props.tasks.createTask(props.web3.sha3(name), kudos, {from: account}, (err, result) => {
       if(err) {
         console.error(err);

@@ -417,6 +417,7 @@ contract("Tasks", async accounts => {
     });
 
     it("should be able to get a list of all my completed tasks", async function() {
-        assert.isTrue(false);
+        let events = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:0, toBlock:'latest', filter:{owner:taskOwner}});        
+        assert.isTrue(events.length > 0);
     });
 });

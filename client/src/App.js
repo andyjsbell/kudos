@@ -124,7 +124,7 @@ const TaskEntry = (props) => {
         setMessage('Allowance checked');
         // TODO Create off chain meta information, IPFS
         const id = props.web3.sha3(name);
-        
+
         props.tasks.createTask(id, kudos, {from: account}, (err, result) => {
         
           if(err) {
@@ -174,8 +174,6 @@ class App extends Component {
 
   componentDidMount = async () => {
     try {
-      // Workaround for compatibility between web3 and truffle-contract
-      Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;	
       
       const web3 = await getWeb3();
       const accounts = await web3.eth.accounts;

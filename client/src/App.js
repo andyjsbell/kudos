@@ -108,13 +108,16 @@ const TaskEntry = (props) => {
   const [description, setDescription] = useState('');
   const [kudos, setKudos] = useState(0);
   const account = props.accounts[0];
-
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  
   const createTask = () => {
-    // TODO Check allowance
+
     props.kudos.allowance(account, props.tasks.address, {from: account}, (err, result) => {
       
       if (err) {
-        console.error(err);
+
+        setError(err);
       
       } else {
         
@@ -122,7 +125,7 @@ const TaskEntry = (props) => {
         
         props.tasks.createTask(props.web3.sha3(name), kudos, {from: account}, (err, result) => {
           if(err) {
-            console.error(err);
+            setError(err);
           } else {
             console.log(result);
             
@@ -136,6 +139,7 @@ const TaskEntry = (props) => {
   return (
     <>
       <h1>Task Entry:</h1>
+      <h4>{error}</h4>
       <Form>
         <Form.Field>
           <Label>Name</Label>
@@ -154,6 +158,7 @@ const TaskEntry = (props) => {
     </>
   );
 };
+
 class App extends Component {
 
   state = {web3: null, accounts: [], kudos: null, tasks: null};

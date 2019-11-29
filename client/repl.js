@@ -17,11 +17,11 @@ const kudosInstance = kudosTokenContract.at(kudosTokenDeployedNetwork.address);
 const tasksContract  = web3.eth.contract(Tasks.abi);
 const tasksInstance = tasksContract.at(tasksDeployedNetwork.address);
 
-tasksInstance.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
-    console.log(result);
-});
-kudosInstance.approve(tasksInstance.address, 2000, {from:accounts[0]});
-tasksInstance.createTask(web3.sha3('task2'), 10, {from: accounts[0]});
+// tasksInstance.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
+//     console.log(result);
+// });
+// kudosInstance.approve(tasksInstance.address, 2000, {from:accounts[0]});
+// tasksInstance.createTask(web3.sha3('task2'), 10, {from: accounts[0]});
 
 context.web3 = web3;
 context.accounts = accounts;

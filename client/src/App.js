@@ -123,8 +123,9 @@ const TaskEntry = (props) => {
         
         setMessage('Allowance checked');
         // TODO Create off chain meta information, IPFS
+        const id = props.web3.sha3(name);
         
-        props.tasks.createTask(props.web3.sha3(name), kudos, {from: account}, (err, result) => {
+        props.tasks.createTask(id, kudos, {from: account}, (err, result) => {
         
           if(err) {
         

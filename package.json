@@ -6,7 +6,8 @@
     "license": "MIT",
     "scripts": {
         "install": "cd client && yarn install",
-        "start": "cd client && yarn start"
+        "start": "cd client && yarn start",
+        "migrate": "truffle migrate --network development"
     },
     "dependencies": {
         "@openzeppelin/contracts": "^2.4.0",

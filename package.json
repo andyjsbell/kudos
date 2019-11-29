@@ -7,7 +7,7 @@
     "scripts": {
         "install": "cd client && yarn install",
         "start": "cd client && yarn start",
-        "migrate": "truffle migrate --network development",
+        "migrate": "truffle migrate --reset --network development",
         "repl": "cd client && node repl.js"
     },
     "dependencies": {

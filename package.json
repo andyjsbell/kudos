@@ -7,7 +7,8 @@
     "scripts": {
         "install": "cd client && yarn install",
         "start": "cd client && yarn start",
-        "migrate": "truffle migrate --network development"
+        "migrate": "truffle migrate --network development",
+        "repl": "cd client && node repl.js"
     },
     "dependencies": {
         "@openzeppelin/contracts": "^2.4.0",

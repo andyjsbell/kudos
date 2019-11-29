@@ -5,6 +5,7 @@ import 'semantic-ui-css/semantic.min.css';
 import { Table, Button, Input, Label, Form } from 'semantic-ui-react';
 import KudosToken from './contracts/KudosToken.json'
 import Tasks from './contracts/Tasks.json'
+const IPFS = require('ipfs');
 // web3 https://github.com/ethereum/wiki/wiki/JavaScript-API
 const Web3 = require('web3');
 

@@ -111,13 +111,24 @@ const TaskEntry = (props) => {
 
   const createTask = () => {
     // TODO Check allowance
-
-    // TODO Create off chain meta information, IPFS
-    props.tasks.createTask(props.web3.sha3(name), kudos, {from: account}, (err, result) => {
-      if(err) {
+    props.kudos.allowance(account, props.tasks.address, {from: account}, (err, result) => {
+      
+      if (err) {
         console.error(err);
+      
       } else {
+        
         console.log(result);
+        
+        props.tasks.createTask(props.web3.sha3(name), kudos, {from: account}, (err, result) => {
+          if(err) {
+            console.error(err);
+          } else {
+            console.log(result);
+            
+            // TODO Create off chain meta information, IPFS
+          }
+        });
       }
     });
   };

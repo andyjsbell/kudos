@@ -121,15 +121,18 @@ const TaskEntry = (props) => {
       
       } else {
         
-        console.log(result);
+        setMessage('Allowance checked');
+        // TODO Create off chain meta information, IPFS
         
         props.tasks.createTask(props.web3.sha3(name), kudos, {from: account}, (err, result) => {
+        
           if(err) {
+        
             setError(err);
+        
           } else {
-            console.log(result);
-            
-            // TODO Create off chain meta information, IPFS
+        
+            setMessage('Task \'' + name + '\' created');            
           }
         });
       }
@@ -140,6 +143,7 @@ const TaskEntry = (props) => {
     <>
       <h1>Task Entry:</h1>
       <h4>{error}</h4>
+      <h4>{message}</h4>
       <Form>
         <Form.Field>
           <Label>Name</Label>

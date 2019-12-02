@@ -5,9 +5,8 @@ import 'semantic-ui-css/semantic.min.css';
 import { Table, Button, Input, Label, Form } from 'semantic-ui-react';
 import KudosToken from './contracts/KudosToken.json';
 import Tasks from './contracts/Tasks.json';
-const IPFS = require('ipfs');
+//const IPFS = require('ipfs');
 // web3 https://github.com/ethereum/wiki/wiki/JavaScript-API
-const Web3 = require('web3');
 
 const Wallet = (props) => {
   const [balance, setBalance] = useState('0');
@@ -144,7 +143,7 @@ const TaskEntry = (props) => {
   return (
     <>
       <h1>Task Entry:</h1>
-      <h4>{error}</h4>
+      <h4>{error.message}</h4>
       <h4>{message}</h4>
       <Form>
         <Form.Field>

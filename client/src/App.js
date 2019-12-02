@@ -13,7 +13,9 @@ const Wallet = (props) => {
   const [allowance, setAllowance] = useState('0');
   const [proposedIncreaseOfAllowance, setProposedIncreaseOfAllowance] = useState('0');
   const [ipfsVersion, setIpfsVersion] = useState('');
-
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  
   useEffect(() => {
     props.kudos.balanceOf(account, function(error, result) {
       setBalance(result.toString());
@@ -31,8 +33,9 @@ const Wallet = (props) => {
   const updateAllowance = () => {
     props.kudos.increaseAllowance(props.tasks.address, parseInt(proposedIncreaseOfAllowance), {from: account}, function(error, result) {
       if(error) {
-        console.log(error);
+        setError(error);
       } else {
+        setMessage('Allowance updated');      
         props.kudos.allowance(account, props.tasks.address, function(error, result) {
           setAllowance(result.toString());
         });
@@ -47,6 +50,8 @@ const Wallet = (props) => {
       <h4>IPFS version: {ipfsVersion}</h4>
       <h4>Your Kudos balance is: {balance} tokens</h4>
       <h4>Tasks has an allowance of: {allowance} tokens</h4>
+      <h4>{error.message}</h4>
+      <h4>{message}</h4>
       <Form>
         <Form.Field>
           <Label>Kudos</Label>
@@ -121,7 +126,7 @@ const TaskEntry = (props) => {
       
       if (err) {
 
-        setError(err.message);
+        setError(err);
       
       } else {
         
@@ -137,7 +142,7 @@ const TaskEntry = (props) => {
           
           if (err) {
             
-            setError(err.message);
+            setError(err);
 
           } else {
             

@@ -218,7 +218,7 @@ const TaskEntry = (props) => {
         </Form.Field>
         <Form.Field>
           <Label>Kudos</Label>
-          <Input placeholder='Number of Kudos' onChange={e => setKudos(e.target.value)}></Input>
+          <Input placeholder='Number of Kudos' onChange={e => setKudos(e.target.value)} type='number'></Input>
         </Form.Field>
         <Button primary onClick={() => createTask()}>Create Task</Button>
       </Form>

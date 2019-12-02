@@ -6,6 +6,7 @@
     "license": "MIT",
     "scripts": {
         "install": "cd client && yarn install",
+        "build": "truffle compile",
         "start": "cd client && yarn start",
         "migrate": "truffle migrate --reset --network development",
         "repl": "cd client && node repl.js"

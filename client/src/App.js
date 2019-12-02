@@ -107,7 +107,7 @@ const TaskList = (props) => {
     props.tasks.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
       
       tmpTasks = [...tmpTasks, 
-                  { id: tmpTasks.length,
+                  { id: result.args.task,
                     value: {  
                       task: result.args.task, 
                       owner: result.args.owner,

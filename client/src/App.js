@@ -5,15 +5,15 @@ import 'semantic-ui-css/semantic.min.css';
 import { Table, Button, Input, Label, Form } from 'semantic-ui-react';
 import KudosToken from './contracts/KudosToken.json';
 import Tasks from './contracts/Tasks.json';
-//const IPFS = require('ipfs');
-// web3 https://github.com/ethereum/wiki/wiki/JavaScript-API
+const IPFS = require('ipfs');
 
 const Wallet = (props) => {
   const [balance, setBalance] = useState('0');
   const account = props.accounts[0];
   const [allowance, setAllowance] = useState('0');
   const [proposedIncreaseOfAllowance, setProposedIncreaseOfAllowance] = useState('0');
-  
+  const [ipfsVersion, setIpfsVersion] = useState('');
+
   useEffect(() => {
     props.kudos.balanceOf(account, function(error, result) {
       setBalance(result.toString());
@@ -23,6 +23,9 @@ const Wallet = (props) => {
       setAllowance(result.toString());
     });
 
+    props.ipfs.version(function(error, result) {
+      setIpfsVersion(result.version);
+    });
   }, []);
 
   const updateAllowance = () => {
@@ -41,6 +44,7 @@ const Wallet = (props) => {
     <>
       <h1>Wallet</h1>
       <h4>Account: '{account}'</h4>
+      <h4>IPFS version: {ipfsVersion}</h4>
       <h4>Your Kudos balance is: {balance} tokens</h4>
       <h4>Tasks has an allowance of: {allowance} tokens</h4>
       <Form>
@@ -122,18 +126,34 @@ const TaskEntry = (props) => {
       } else {
         
         setMessage('Allowance checked');
-        // TODO Create off chain meta information, IPFS
-        const id = props.web3.sha3(name);
+        
+        const content = {
+          name,
+          description,
+          kudos
+        };
 
-        props.tasks.createTask(id, kudos, {from: account}, (err, result) => {
-        
-          if(err) {
-        
-            setError(err);
-        
+        props.ipfs.add({path:'kudos.json', content:JSON.stringify(content)}, (err, result) => {
+          
+          if (err) {
+            
+            console.error(err);
+
           } else {
-        
-            setMessage('Task \'' + name + '\' created');            
+            
+            const id = result[0].hash;
+
+            props.tasks.createTask(id, kudos, {from: account}, (err, result) => {
+            
+              if(err) {
+            
+                setError(err);
+            
+              } else {
+            
+                setMessage('Task \'' + name + '\' created');            
+              }
+            });
           }
         });
       }
@@ -166,7 +186,7 @@ const TaskEntry = (props) => {
 
 class App extends Component {
 
-  state = {web3: null, accounts: [], kudos: null, tasks: null};
+  state = {web3: null, accounts: [], kudos: null, tasks: null, ipfs: null};
   
   handleChange(event, newValue) {
     this.setState({value: newValue});
@@ -184,11 +204,13 @@ class App extends Component {
       const kudosInstance = kudosTokenContract.at(kudosTokenDeployedNetwork.address);
       const tasksContract  = web3.eth.contract(Tasks.abi);
       const tasksInstance = tasksContract.at(tasksDeployedNetwork.address);
-
+      const node = await IPFS.create();
+      
       this.setState({ web3:web3, 
                       accounts:accounts, 
                       kudos:kudosInstance, 
-                      tasks:tasksInstance });
+                      tasks:tasksInstance,
+                      ipfs: node});
       
     } catch (error) {
       // Catch any errors for any of the above operations.

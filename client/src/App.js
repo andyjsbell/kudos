@@ -28,6 +28,15 @@ const Wallet = (props) => {
     props.ipfs.version(function(err, result) {
       setIpfsVersion(result.version);
     });
+
+    props.kudos.Approval({}, {fromBlock:0}).watch((err, result) => {
+      
+      if (err) {
+        console.error(err);
+      } else {
+        setAllowance(result.args.value.toString());
+      }
+    });
   }, []);
 
   const updateAllowance = () => {
@@ -35,10 +44,7 @@ const Wallet = (props) => {
       if(error) {
         setError(error);
       } else {
-        setMessage('Allowance updated');      
-        props.kudos.allowance(account, props.tasks.address, function(err, result) {
-          setAllowance(result.toString());
-        });
+        setMessage('Allowance updated');
       }
     });
   };

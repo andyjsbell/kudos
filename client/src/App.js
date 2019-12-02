@@ -121,7 +121,7 @@ const TaskEntry = (props) => {
       
       if (err) {
 
-        setError(err);
+        setError(err.message);
       
       } else {
         
@@ -137,10 +137,12 @@ const TaskEntry = (props) => {
           
           if (err) {
             
-            console.error(err);
+            setError(err.message);
 
           } else {
             
+            setMessage('Task stored');
+
             const id = result[0].hash;
 
             props.tasks.createTask(id, kudos, {from: account}, (err, result) => {

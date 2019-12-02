@@ -17,26 +17,26 @@ const Wallet = (props) => {
   const [error, setError] = useState('');
   
   useEffect(() => {
-    props.kudos.balanceOf(account, function(error, result) {
+    props.kudos.balanceOf(account, function(err, result) {
       setBalance(result.toString());
     });
 
-    props.kudos.allowance(account, props.tasks.address, function(error, result) {
+    props.kudos.allowance(account, props.tasks.address, function(err, result) {
       setAllowance(result.toString());
     });
 
-    props.ipfs.version(function(error, result) {
+    props.ipfs.version(function(err, result) {
       setIpfsVersion(result.version);
     });
   }, []);
 
   const updateAllowance = () => {
-    props.kudos.increaseAllowance(props.tasks.address, parseInt(proposedIncreaseOfAllowance), {from: account}, function(error, result) {
+    props.kudos.increaseAllowance(props.tasks.address, parseInt(proposedIncreaseOfAllowance), {from: account}, function(err, result) {
       if(error) {
         setError(error);
       } else {
         setMessage('Allowance updated');      
-        props.kudos.allowance(account, props.tasks.address, function(error, result) {
+        props.kudos.allowance(account, props.tasks.address, function(err, result) {
           setAllowance(result.toString());
         });
       }

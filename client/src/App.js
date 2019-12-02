@@ -11,7 +11,7 @@ const Wallet = (props) => {
   const [balance, setBalance] = useState('0');
   const account = props.accounts[0];
   const [allowance, setAllowance] = useState('0');
-  const [proposedIncreaseOfAllowance, setProposedIncreaseOfAllowance] = useState('0');
+  const [proposedIncreaseOfAllowance, setProposedIncreaseOfAllowance] = useState(0);
   const [ipfsVersion, setIpfsVersion] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -40,13 +40,16 @@ const Wallet = (props) => {
   }, []);
 
   const updateAllowance = () => {
-    props.kudos.increaseAllowance(props.tasks.address, parseInt(proposedIncreaseOfAllowance), {from: account}, function(err, result) {
-      if(error) {
-        setError(error);
-      } else {
-        setMessage('Allowance updated');
-      }
-    });
+    
+    if (proposedIncreaseOfAllowance > 0) {
+      props.kudos.increaseAllowance(props.tasks.address, proposedIncreaseOfAllowance, {from: account}, function(err, result) {
+        if(error) {
+          setError(error);
+        } else {
+          setMessage('Allowance updated');
+        }
+      });
+    }
   };
 
   return(
@@ -61,7 +64,9 @@ const Wallet = (props) => {
       <Form>
         <Form.Field>
           <Label>Kudos</Label>
-          <Input placeholder='Number of Kudos' onChange={e => setProposedIncreaseOfAllowance(e.target.value)}></Input>
+          <Input placeholder='Number of Kudos' 
+                onChange={e => setProposedIncreaseOfAllowance(e.target.value)} 
+                type='number'/>
         </Form.Field>
         <Button primary onClick={() => updateAllowance()}>Update Allowance</Button>
       </Form>

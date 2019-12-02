@@ -3,6 +3,7 @@ var repl = require("repl");
 var context = repl.start("$ ").context;
 
 const Web3 = require('web3');
+const IPFS = require('ipfs');
 
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 const KudosToken = require('./src/contracts/KudosToken.json');
@@ -16,6 +17,7 @@ const kudosTokenContract  = web3.eth.contract(KudosToken.abi);
 const kudosInstance = kudosTokenContract.at(kudosTokenDeployedNetwork.address);
 const tasksContract  = web3.eth.contract(Tasks.abi);
 const tasksInstance = tasksContract.at(tasksDeployedNetwork.address);
+const node = await IPFS.create();
 
 // tasksInstance.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
 //     console.log(result);
@@ -27,4 +29,5 @@ context.web3 = web3;
 context.accounts = accounts;
 context.kudosInstance = kudosInstance;
 context.tasksInstance = tasksInstance;
+context.node = node;
 

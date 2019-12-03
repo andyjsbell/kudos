@@ -78,6 +78,10 @@ const Wallet = (props) => {
     }
   };
 
+  const onDrop = (picture) => {
+;
+  }
+
   return(
     <>
       <h1>Your Wallet</h1>
@@ -96,6 +100,12 @@ const Wallet = (props) => {
         </Form.Field>
         <Button primary onClick={() => updateAllowance()}>Update Allowance</Button>
       </Form>
+      <ImageUploader
+                withIcon={true}
+                buttonText='Choose images'
+                onChange={e => onDrop(e)}
+                imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                maxFileSize={5242880} />
     </>
   );
 };

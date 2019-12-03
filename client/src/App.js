@@ -141,7 +141,7 @@ const TaskList = (props) => {
         <Table.Body>
           {tasks.map(row => (
             <Table.Row key={row.id}>
-              <Table.Cell align="left"><a href={'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(row.id)}>{row.value.name}</a></Table.Cell>
+              <Table.Cell align="left">{row.value.name}</Table.Cell>
               <Table.Cell align="left">{row.value.description}</Table.Cell>
               <Table.Cell align="left">{row.value.kudos}</Table.Cell>
             </Table.Row>

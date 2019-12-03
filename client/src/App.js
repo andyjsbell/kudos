@@ -81,6 +81,9 @@ const Wallet = (props) => {
   };
 
   const updateProfile = () => {
+
+    setMessage('');
+
     if (name !== null && picture !== null) {
       props.ipfs.add(picture, (err, result) => {
         if (err) {
@@ -146,7 +149,8 @@ const Wallet = (props) => {
                 onChange={e => setPicture(e)}
                 imgExtension={['.jpg', '.gif', '.png', '.gif']}
                 maxFileSize={5242880} 
-                singleImage='false'/>
+                singleImage='false'
+                withPreview='true'/>
         </Form.Field>
         <Button primary onClick={() => updateProfile()}>Update Profile</Button>
       </Form>

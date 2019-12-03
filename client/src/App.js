@@ -181,11 +181,12 @@ const TaskEntry = (props) => {
         props.tasks.nextTask.call((err, result) => {
           
           const content = {
+            v: 1,
             id: result.toString(),
             name,
             description,
             kudos,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           };
 
           props.ipfs.add({path:'kudos.json', content:JSON.stringify(content)}, (err, result) => {

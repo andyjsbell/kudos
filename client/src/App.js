@@ -211,7 +211,7 @@ const TaskList = (props) => {
         .then(data => {
           if (tmpTasks.some(t => t.id === result.args.task))
             return;
-          
+            data.owner = result.args.owner;
             tmpTasks = [...tmpTasks, 
             { id: result.args.task,
               value: data
@@ -235,6 +235,7 @@ const TaskList = (props) => {
             <Table.HeaderCell>Description</Table.HeaderCell>
             <Table.HeaderCell>Kudos</Table.HeaderCell>
             <Table.HeaderCell>Created</Table.HeaderCell>
+            <Table.HeaderCell>Owner</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -245,6 +246,7 @@ const TaskList = (props) => {
               <Table.Cell align="left">{row.value.description}</Table.Cell>
               <Table.Cell align="left">{row.value.kudos}</Table.Cell>
               <Table.Cell align="left">{new Date(row.value.timestamp).toDateString()}</Table.Cell>
+              <Table.Cell align="left">{row.value.owner}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

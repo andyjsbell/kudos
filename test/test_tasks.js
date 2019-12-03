@@ -442,4 +442,9 @@ contract("Tasks", async accounts => {
         let wonEvents = await tasksInstance.getPastEvents('TaskCompleted', {fromBlock:blockNumber, toBlock:'latest', filter:{winner:taskHunter}});        
         assert.isTrue(wonEvents.length > 0);
     });
+
+    it("should be able to get the next task", async function() {
+        let taskIdBN = await tasksInstance.nextTask();
+        assert.isTrue(parseInt(taskIdBN.toString()) > 0);
+    });
 });

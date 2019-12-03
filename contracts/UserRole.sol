@@ -8,7 +8,9 @@ contract UserRole {
     }
 
     function updateUser(bytes32 id)
-        public {
+        public
+        returns (bool) {
         users[msg.sender] = id;
+        return true;
     }
 }

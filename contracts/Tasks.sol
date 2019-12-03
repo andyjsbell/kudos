@@ -24,6 +24,7 @@ contract Tasks is Pausable, Ownable {
     event TimeoutChanged(uint beforeInDays, uint afterInDays);
 
     mapping(bytes32 => Task) public tasks;
+    uint public taskCounter;
     uint public timeoutInDays;
     KudosToken private kudos;
 
@@ -52,6 +53,17 @@ contract Tasks is Pausable, Ownable {
     }
 
     /// @author Andy Bell andy.bell@displaynote.com
+    /// @notice Next task identifier
+    /// @return returns task identifier
+    function nextTask()
+        public
+        view
+        returns (uint) {
+
+        return taskCounter + 1;
+    }
+
+    /// @author Andy Bell andy.bell@displaynote.com
     /// @notice Create a task to be completed
     /// @param _id A 32 character hash which would point to decentralised metainfo
     /// @param _tokens A number of Kudos tokens for this task
@@ -72,6 +84,7 @@ contract Tasks is Pausable, Ownable {
         t.created = block.timestamp;
         tasks[_id] = t;
 
+        taskCounter = nextTask();
         // Emit the event
         emit TaskCreated(_id, msg.sender, _tokens);
 

@@ -79,7 +79,7 @@ const Wallet = (props) => {
 
   return(
     <>
-      <h1>Wallet</h1>
+      <h1>Your Wallet</h1>
       <h4>Account: '{account}'</h4>
       <h4>IPFS version: {ipfsVersion}</h4>
       <h4>Your Kudos balance is: {balance} tokens</h4>

@@ -41,7 +41,9 @@ const Wallet = (props) => {
   const [ipfsVersion, setIpfsVersion] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  
+  const [name, setName] = useState('');
+  const [picture, setPicture] = useState('');
+
   useEffect(() => {
     props.kudos.balanceOf(account, function(err, result) {
       setBalance(result.toString());
@@ -79,7 +81,7 @@ const Wallet = (props) => {
   };
 
   const onDrop = (picture) => {
-;
+    console.log(picture);
   }
 
   return(
@@ -100,12 +102,23 @@ const Wallet = (props) => {
         </Form.Field>
         <Button primary onClick={() => updateAllowance()}>Update Allowance</Button>
       </Form>
-      <ImageUploader
+
+      <Form>
+        <Form.Field>          
+          <Label>Name</Label>
+          <Input placeholder='Your name' 
+                onChange={e => setName(e.target.value)} />
+        </Form.Field>
+        <Form.Field>          
+          <Label>Avatar</Label>
+          <ImageUploader
                 withIcon={true}
                 buttonText='Choose images'
                 onChange={e => onDrop(e)}
                 imgExtension={['.jpg', '.gif', '.png', '.gif']}
                 maxFileSize={5242880} />
+        </Form.Field>
+      </Form>
     </>
   );
 };

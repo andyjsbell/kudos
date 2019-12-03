@@ -6,6 +6,7 @@ import { Table, Button, Input, Label, Form } from 'semantic-ui-react';
 import KudosToken from './contracts/KudosToken.json';
 import Tasks from './contracts/Tasks.json';
 import bs58 from 'bs58';
+import ImageUploader from 'react-images-upload';
 const IPFS = require('ipfs');
 
 // Return bytes32 hex string from base58 encoded ipfs hash,

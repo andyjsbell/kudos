@@ -109,16 +109,30 @@ const TaskList = (props) => {
       if (tmpTasks.some(t => t.id === result.args.task))
         return;
       
-      tmpTasks = [...tmpTasks, 
-                  { id: result.args.task,
-                    value: {  
-                      task: result.args.task, 
-                      owner: result.args.owner,
-                      tokens: result.args.tokens.toString()
-                    }
-                  }];
+      // tmpTasks = [...tmpTasks, 
+      //             { id: result.args.task,
+      //               value: {  
+      //                 task: result.args.task, 
+      //                 owner: result.args.owner,
+      //                 tokens: result.args.tokens.toString()
+      //               }
+      //             }];
       
-      setTasks(tmpTasks);
+      // setTasks(tmpTasks);
+      const url = 'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(result.args.task);
+      fetch(url)
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          tmpTasks = [...tmpTasks, 
+            { id: result.args.task,
+              value: data
+            }];
+
+          console.log(data);
+          setTasks(tmpTasks);
+        });
     });
 
   }, []);
@@ -131,16 +145,16 @@ const TaskList = (props) => {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Task</Table.HeaderCell>
-            <Table.HeaderCell>Owner</Table.HeaderCell>
-            <Table.HeaderCell>Tokens</Table.HeaderCell>
+            <Table.HeaderCell>Description</Table.HeaderCell>
+            <Table.HeaderCell>Kudos</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {tasks.map(row => (
             <Table.Row key={row.id}>
-              <Table.Cell align="left"><a href={'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(row.value.task)}>{row.value.task}</a></Table.Cell>
-              <Table.Cell align="left">{row.value.owner}</Table.Cell>
-              <Table.Cell align="left">{row.value.tokens}</Table.Cell>
+              <Table.Cell align="left"><a href={'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(row.id)}>{row.value.name}</a></Table.Cell>
+              <Table.Cell align="left">{row.value.description}</Table.Cell>
+              <Table.Cell align="left">{row.value.kudos}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

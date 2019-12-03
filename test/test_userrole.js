@@ -38,7 +38,12 @@ contract("UserRole", async accounts => {
     });
 
     it('should be able to remove user', async function() {
-        await userRoleInstance.removeUser(user1, {from:owner});
+        let txObj = await userRoleInstance.removeUser(user1, {from:owner});
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logUserRemoved = txObj.logs[0];
+        assert.strictEqual(logUserRemoved.event, "UserRemoved");
+
         const chainHash = await userRoleInstance.users.call(user1);
         assert.strictEqual(chainHash[0], '0');
     });

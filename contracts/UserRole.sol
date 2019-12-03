@@ -8,6 +8,7 @@ contract UserRole is Ownable, Pausable  {
     mapping(address => bytes32) public users;
 
     event UserUpdated(address indexed user, bytes32 id);
+    event UserRemoved(address indexed user);
 
     function updateUser(bytes32 _id)
         public
@@ -24,6 +25,7 @@ contract UserRole is Ownable, Pausable  {
         returns (bool) {
         require(address(0x0) != _user, 'Invalid address');
         require(isOwner() || _user == msg.sender, 'Not authorised');
+        emit UserRemoved(_user);
         users[_user] = '';
         return true;
     }

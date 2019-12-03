@@ -68,8 +68,8 @@ const Wallet = (props) => {
     
     if (proposedIncreaseOfAllowance > 0) {
       props.kudos.increaseAllowance(props.tasks.address, proposedIncreaseOfAllowance, {from: account}, function(err, result) {
-        if(error) {
-          setError(error);
+        if(err) {
+          setError(err.message);
         } else {
           setMessage('Allowance updated');
         }
@@ -84,7 +84,7 @@ const Wallet = (props) => {
       <h4>IPFS version: {ipfsVersion}</h4>
       <h4>Your Kudos balance is: {balance} tokens</h4>
       <h4>Tasks has an allowance of: {allowance} tokens</h4>
-      <h4>{error.message}</h4>
+      <h4>{error}</h4>
       <h4>{message}</h4>
       <Form>
         <Form.Field>
@@ -165,7 +165,7 @@ const TaskEntry = (props) => {
       
       if (err) {
 
-        setError(err);
+        setError(err.message);
       
       } else {
         
@@ -181,7 +181,7 @@ const TaskEntry = (props) => {
           
           if (err) {
             
-            setError(err);
+            setError(err.message);
 
           } else {
             
@@ -192,7 +192,7 @@ const TaskEntry = (props) => {
             
               if(err) {
             
-                setError(err);
+                setError(err.message);
             
               } else {
             
@@ -219,7 +219,7 @@ const TaskEntry = (props) => {
   return (
     <>
       <h1>Task Entry:</h1>
-      <h4>{error.message}</h4>
+      <h4>{error}</h4>
       <h4>{message}</h4>
       <Form>
         <Form.Field>

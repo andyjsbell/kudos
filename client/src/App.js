@@ -143,7 +143,7 @@ const TaskList = (props) => {
         <Table.Body>
           {tasks.map(row => (
             <Table.Row key={row.id}>
-              <Table.Cell align="left"><a href={'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(row.id)}>{row.value.taskId}</a></Table.Cell>
+              <Table.Cell align="left"><a href={'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(row.id)}>{row.value.id}</a></Table.Cell>
               <Table.Cell align="left">{row.value.name}</Table.Cell>
               <Table.Cell align="left">{row.value.description}</Table.Cell>
               <Table.Cell align="left">{row.value.kudos}</Table.Cell>
@@ -181,7 +181,7 @@ const TaskEntry = (props) => {
         props.tasks.nextTask.call((err, result) => {
           
           const content = {
-            taskId: result.toString(),
+            id: result.toString(),
             name,
             description,
             kudos,

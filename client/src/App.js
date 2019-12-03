@@ -130,7 +130,7 @@ const TaskList = (props) => {
     <>
     <h1>Tasks</h1>
     {tasks && tasks.length > 0 ?
-      <Table celled>
+      <Table celled striped>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Task</Table.HeaderCell>

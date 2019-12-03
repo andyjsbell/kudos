@@ -39,7 +39,7 @@ contract("UserRole", async accounts => {
     });
 
     it('should fail removing user if not owner', async function() {
-        await truffleAssert.reverts(await userRoleInstance.removeUser(user1, {from:user1}), 
+        await truffleAssert.reverts(userRoleInstance.removeUser(user1, {from:user1}), 
                                     'Ownable: caller is not the owner');
     });
 });

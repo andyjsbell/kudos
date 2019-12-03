@@ -113,10 +113,11 @@ const Wallet = (props) => {
           <Label>Avatar</Label>
           <ImageUploader
                 withIcon={true}
-                buttonText='Choose images'
+                buttonText='Choose image for avatar'
                 onChange={e => onDrop(e)}
                 imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                maxFileSize={5242880} />
+                maxFileSize={5242880} 
+                singleImage='false'/>
         </Form.Field>
       </Form>
     </>

@@ -16,9 +16,9 @@ contract UserRole is Ownable {
 
     function removeUser(address _user)
         public
-        onlyOwner
         returns (bool) {
         require(address(0x0) != _user, 'Invalid address');
+        require(isOwner() || _user == msg.sender, 'Not authorised');
         users[_user] = '';
         return true;
     }

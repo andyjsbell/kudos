@@ -215,7 +215,7 @@ const TaskList = (props) => {
             return;
 
           props.user.users(
-            account, 
+            result.args.owner, 
             {from:account}, 
             (err, userResult) => {
             

@@ -7,11 +7,14 @@ contract UserRole is Ownable, Pausable  {
 
     mapping(address => bytes32) public users;
 
+    event UserUpdated(address indexed user, bytes32 id);
+
     function updateUser(bytes32 _id)
         public
         whenNotPaused
         returns (bool) {
         require(_id[0] != 0, 'Invalid id');
+        emit UserUpdated(msg.sender, _id);
         users[msg.sender] = _id;
         return true;
     }

@@ -16,7 +16,12 @@ contract("UserRole", async accounts => {
     });
 
     it('should add me as a user with a valid bytes32 value', async function() {
-        await userRoleInstance.updateUser(hash1, {from:user1});
+        let txObj = await userRoleInstance.updateUser(hash1, {from:user1});
+        assert.strictEqual(txObj.receipt.logs.length, 1);
+        assert.strictEqual(txObj.logs.length, 1);
+        const logUserUpdated = txObj.logs[0];
+        assert.strictEqual(logUserUpdated.event, "UserUpdated");
+
         const chainHash = await userRoleInstance.users.call(user1);
         assert.strictEqual(hash1, chainHash);
     });

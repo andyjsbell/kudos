@@ -106,6 +106,9 @@ const TaskList = (props) => {
 
     props.tasks.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
       
+      if (tmpTasks.some(t => t.id === result.args.task))
+        return;
+      
       tmpTasks = [...tmpTasks, 
                   { id: result.args.task,
                     value: {  

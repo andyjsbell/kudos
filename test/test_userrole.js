@@ -31,4 +31,10 @@ contract("UserRole", async accounts => {
         const chainHash = await userRoleInstance.users.call(user1);
         assert.strictEqual(hash2, chainHash);
     });
+
+    it('should be able to remove user', async function() {
+        await userRoleInstance.removeUser(user1, {from:owner});
+        const chainHash = await userRoleInstance.users.call(user1);
+        assert.strictEqual(chainHash[0], '0');
+    });
 });

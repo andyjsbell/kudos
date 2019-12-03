@@ -205,6 +205,17 @@ const TaskEntry = (props) => {
     });
   };
 
+  const validateKudos = (kudos) => {
+    props.kudos.allowance(account, props.tasks.address, function(err, result) {
+      const currentAllowance = parseInt(result.toString());
+      if (parseInt(kudos) < currentAllowance) {
+        setKudos(kudos);
+        setError('');
+      } else {
+        setError('Check your allowance');
+      } 
+    });
+  };
   return (
     <>
       <h1>Task Entry:</h1>
@@ -221,9 +232,9 @@ const TaskEntry = (props) => {
         </Form.Field>
         <Form.Field>
           <Label>Kudos</Label>
-          <Input placeholder='Number of Kudos' onChange={e => setKudos(e.target.value)} type='number'></Input>
+          <Input placeholder='Number of Kudos' onChange={e => validateKudos(e.target.value)} type='number'></Input>
         </Form.Field>
-        <Button primary onClick={() => createTask()}>Create Task</Button>
+        <Button primary disabled={error} onClick={() => createTask()}>Create Task</Button>
       </Form>
     </>
   );

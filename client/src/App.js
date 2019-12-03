@@ -255,6 +255,10 @@ const TaskList = (props) => {
 
   }, []);
 
+  const hunt = () => {
+
+  };
+
   return(
     <>
     <h1>Tasks</h1>
@@ -268,6 +272,7 @@ const TaskList = (props) => {
             <Table.HeaderCell>Kudos</Table.HeaderCell>
             <Table.HeaderCell>Created</Table.HeaderCell>
             <Table.HeaderCell>Owner</Table.HeaderCell>
+            <Table.HeaderCell></Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -279,6 +284,14 @@ const TaskList = (props) => {
               <Table.Cell align="left">{row.value.kudos}</Table.Cell>
               <Table.Cell align="left">{new Date(row.value.timestamp).toDateString()}</Table.Cell>
               <Table.Cell align="left">{row.value.ownerName}</Table.Cell>
+              <Table.Cell align="left">
+                  <Button 
+                    secondary 
+                    disabled={row.value.owner === account} 
+                    onClick={() => hunt()}>
+                      Hunt me!
+                  </Button>
+              </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

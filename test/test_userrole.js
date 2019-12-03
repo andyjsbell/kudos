@@ -6,7 +6,7 @@ contract("UserRole", async accounts => {
 
     let [owner, user1, user2] = accounts; 
     let userRoleInstance;
-    const invalidAddress = '0x0000000000000000000000000000000000000000';
+    const invalidId = '0x0000000000000000000000000000000000000000';
     
     before("prepare some things", async function() {
         
@@ -18,5 +18,10 @@ contract("UserRole", async accounts => {
         await userRoleInstance.updateUser(hash, {from:user1});
         const chainHash = await userRoleInstance.users.call(user1);
         assert.strictEqual(hash, chainHash);
+    });
+
+    it('should fail with an invalid bytes32', async function() {
+        await truffleAssert.reverts(userRoleInstance.updateUser(invalidId, {from:user1}), 
+                                    'Invalid id');
     });
 });

@@ -7,10 +7,11 @@ contract UserRole {
     constructor() public {
     }
 
-    function updateUser(bytes32 id)
+    function updateUser(bytes32 _id)
         public
         returns (bool) {
-        users[msg.sender] = id;
+        require(_id[0] != 0, 'Invalid id');
+        users[msg.sender] = _id;
         return true;
     }
 }

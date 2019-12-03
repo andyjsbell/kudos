@@ -12,4 +12,11 @@ contract("UserRole", async accounts => {
         
         userRoleInstance = await UserRole.deployed();
     });
+
+    it('should add me as a user with a valid bytes32 value', async function() {
+        const hash = keccak256('hey');
+        await userRoleInstance.updateUser(hash, {from:user1});
+        const chainHash = await userRoleInstance.users.call(user1);
+        assert.strictEqual(hash, chainHash);
+    });
 });

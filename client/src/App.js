@@ -136,6 +136,7 @@ const TaskList = (props) => {
             <Table.HeaderCell>Task</Table.HeaderCell>
             <Table.HeaderCell>Description</Table.HeaderCell>
             <Table.HeaderCell>Kudos</Table.HeaderCell>
+            <Table.HeaderCell>Created</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -144,6 +145,7 @@ const TaskList = (props) => {
               <Table.Cell align="left">{row.value.name}</Table.Cell>
               <Table.Cell align="left">{row.value.description}</Table.Cell>
               <Table.Cell align="left">{row.value.kudos}</Table.Cell>
+              <Table.Cell align="left">{new Date(row.value.timestamp).toDateString()}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

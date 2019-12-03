@@ -24,4 +24,11 @@ contract("UserRole", async accounts => {
         await truffleAssert.reverts(userRoleInstance.updateUser(invalidId, {from:user1}), 
                                     'Invalid id');
     });
+
+    it('should update the id', async function() {
+        const hash = keccak256('there');
+        await userRoleInstance.updateUser(hash, {from:user1});
+        const chainHash = await userRoleInstance.users.call(user1);
+        assert.strictEqual(hash, chainHash);
+    });
 });

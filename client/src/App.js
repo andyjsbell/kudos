@@ -219,25 +219,35 @@ const TaskList = (props) => {
             {from:account}, 
             (err, userResult) => {
             
-              if (!err) {
-                
-                const url = IPFS_NODE_URL + getIpfsHashFromBytes32(userResult.toString());
-                
-                fetch(url)
-                  .then(response => {
-                    return response.json();
-                  })
-                  .then(jsonData => {
-                    data.owner = result.args.owner;
-                    data.ownerName = jsonData.name;
-                    data.picture = jsonData.picture;
-                    tmpTasks = [...tmpTasks, 
+              if (!err) { 
+                console.log(userResult);
+                if (parseInt(userResult) === 0) {
+                  data.owner = result.args.owner;
+                  tmpTasks = [...tmpTasks, 
                     { id: result.args.task,
                       value: data
                     }];
 
-                    setTasks(tmpTasks);
-                });
+                  setTasks(tmpTasks);
+                } else {
+                  const url = IPFS_NODE_URL + getIpfsHashFromBytes32(userResult.toString());
+                  
+                  fetch(url)
+                    .then(response => {
+                      return response.json();
+                    })
+                    .then(jsonData => {
+                      data.owner = result.args.owner;
+                      data.ownerName = jsonData.name;
+                      data.picture = jsonData.picture;
+                      tmpTasks = [...tmpTasks, 
+                      { id: result.args.task,
+                        value: data
+                      }];
+
+                      setTasks(tmpTasks);
+                  });
+                }
               }  
           });
         });

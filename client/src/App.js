@@ -174,7 +174,8 @@ const TaskEntry = (props) => {
         const content = {
           name,
           description,
-          kudos
+          kudos,
+          timestamp: Date.now()
         };
 
         props.ipfs.add({path:'kudos.json', content:JSON.stringify(content)}, (err, result) => {

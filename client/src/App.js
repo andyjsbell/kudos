@@ -8,7 +8,7 @@ import Tasks from './contracts/Tasks.json';
 import bs58 from 'bs58';
 import ImageUploader from 'react-images-upload';
 const IPFS = require('ipfs');
-
+const IPFS_NODE_URL = 'https://ipfs.io/ipfs/';
 // Return bytes32 hex string from base58 encoded ipfs hash,
 // stripping leading 2 bytes from 34 byte IPFS hash
 // Assume IPFS defaults: function:0x12=sha2, size:0x20=256 bits
@@ -42,7 +42,7 @@ const Wallet = (props) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [name, setName] = useState('');
-  const [picture, setPicture] = useState('');
+  const [picture, setPicture] = useState(null);
 
   useEffect(() => {
     props.kudos.balanceOf(account, function(err, result) {
@@ -80,11 +80,37 @@ const Wallet = (props) => {
     }
   };
 
-  const onDrop = (picture) => {
-    console.log(picture);
-  }
-
   const updateProfile = () => {
+    if (name !== null && picture !== null) {
+      props.ipfs.add(picture, (err, result) => {
+        if (err) {
+          setError(err.message);
+        } else {
+          
+          const hash = result[0].hash;
+          
+          if (hash) {
+            
+            let content = {
+              name,
+              picture: hash
+            };
+            
+            props.ipfs.add({path:'me.json', content:JSON.stringify(content)}, (err, result) => {
+              
+              if (err) {
+                setError(err.message);
+              } else {
+                setMessage('Profile updated at ' + IPFS_NODE_URL + result[0].hash);
+              }
+            });
+
+          } else {
+            setError('Adding file failed in not returning a locator');
+          }
+        }
+      });
+    }
   }
 
   return(
@@ -117,7 +143,7 @@ const Wallet = (props) => {
           <ImageUploader
                 withIcon={true}
                 buttonText='Choose image for avatar'
-                onChange={e => onDrop(e)}
+                onChange={e => setPicture(e)}
                 imgExtension={['.jpg', '.gif', '.png', '.gif']}
                 maxFileSize={5242880} 
                 singleImage='false'/>
@@ -135,7 +161,7 @@ const TaskList = (props) => {
 
     props.tasks.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
       
-      const url = 'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(result.args.task);
+      const url = IPFS_NODE_URL + getIpfsHashFromBytes32(result.args.task);
       fetch(url)
         .then(response => {
           return response.json();
@@ -172,7 +198,7 @@ const TaskList = (props) => {
         <Table.Body>
           {tasks.map(row => (
             <Table.Row key={row.id}>
-              <Table.Cell align="left"><a href={'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(row.id)}>{row.value.id}</a></Table.Cell>
+              <Table.Cell align="left"><a href={IPFS_NODE_URL + getIpfsHashFromBytes32(row.id)}>{row.value.id}</a></Table.Cell>
               <Table.Cell align="left">{row.value.name}</Table.Cell>
               <Table.Cell align="left">{row.value.description}</Table.Cell>
               <Table.Cell align="left">{row.value.kudos}</Table.Cell>

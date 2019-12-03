@@ -84,6 +84,9 @@ const Wallet = (props) => {
     console.log(picture);
   }
 
+  const updateProfile = () => {
+  }
+
   return(
     <>
       <h1>Your Wallet</h1>
@@ -119,6 +122,7 @@ const Wallet = (props) => {
                 maxFileSize={5242880} 
                 singleImage='false'/>
         </Form.Field>
+        <Button primary onClick={() => updateProfile()}>Update Profile</Button>
       </Form>
     </>
   );

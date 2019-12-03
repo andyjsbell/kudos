@@ -200,7 +200,9 @@ const TaskList = (props) => {
   const [tasks, setTasks] = useState([]);
   let tmpTasks = [];
   const [account] = props.accounts;
-
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  
   useEffect(() => {
 
     props.tasks.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
@@ -220,7 +222,6 @@ const TaskList = (props) => {
             (err, userResult) => {
             
               if (!err) { 
-                console.log(userResult);
                 if (parseInt(userResult) === 0) {
                   data.owner = result.args.owner;
                   tmpTasks = [...tmpTasks, 
@@ -255,13 +256,25 @@ const TaskList = (props) => {
 
   }, []);
 
-  const hunt = () => {
+  const hunt = (task) => {
+    props.tasks.addHunter(
+      task, 
+      {from:account}, 
+      (err, result) => {
 
+        if (err) {
+          setError(err.message);
+        } else {
+          setMessage('You are hunting ', task);
+        }
+    });
   };
 
   return(
     <>
     <h1>Tasks</h1>
+    <h4>{error}</h4>
+    <h4>{message}</h4>
     {tasks && tasks.length > 0 ?
       <Table celled striped>
         <Table.Header>
@@ -288,7 +301,7 @@ const TaskList = (props) => {
                   <Button 
                     secondary 
                     disabled={row.value.owner === account} 
-                    onClick={() => hunt()}>
+                    onClick={() => hunt(row.id)}>
                       Hunt me!
                   </Button>
               </Table.Cell>

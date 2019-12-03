@@ -106,16 +106,16 @@ const TaskList = (props) => {
 
     props.tasks.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
       
-      if (tmpTasks.some(t => t.id === result.args.task))
-        return;
-
       const url = 'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(result.args.task);
       fetch(url)
         .then(response => {
           return response.json();
         })
         .then(data => {
-          tmpTasks = [...tmpTasks, 
+          if (tmpTasks.some(t => t.id === result.args.task))
+            return;
+          
+            tmpTasks = [...tmpTasks, 
             { id: result.args.task,
               value: data
             }];
@@ -134,6 +134,7 @@ const TaskList = (props) => {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Task</Table.HeaderCell>
+            <Table.HeaderCell>Name</Table.HeaderCell>
             <Table.HeaderCell>Description</Table.HeaderCell>
             <Table.HeaderCell>Kudos</Table.HeaderCell>
             <Table.HeaderCell>Created</Table.HeaderCell>
@@ -142,6 +143,7 @@ const TaskList = (props) => {
         <Table.Body>
           {tasks.map(row => (
             <Table.Row key={row.id}>
+              <Table.Cell align="left">{row.value.taskId}</Table.Cell>
               <Table.Cell align="left">{row.value.name}</Table.Cell>
               <Table.Cell align="left">{row.value.description}</Table.Cell>
               <Table.Cell align="left">{row.value.kudos}</Table.Cell>
@@ -176,36 +178,40 @@ const TaskEntry = (props) => {
         
         setMessage('Allowance checked');
         
-        const content = {
-          name,
-          description,
-          kudos,
-          timestamp: Date.now()
-        };
-
-        props.ipfs.add({path:'kudos.json', content:JSON.stringify(content)}, (err, result) => {
+        props.tasks.nextTask.call((err, result) => {
           
-          if (err) {
-            
-            setError(err.message);
+          const content = {
+            taskId: result.toString(),
+            name,
+            description,
+            kudos,
+            timestamp: Date.now()
+          };
 
-          } else {
-            
-            setMessage('Task stored');
-
-            const id = getBytes32FromIpfsHash(result[0].hash);
-            props.tasks.createTask(id, kudos, {from: account}, (err, result) => {
-            
-              if(err) {
-            
-                setError(err.message);
-            
-              } else {
-            
-                setMessage('Task \'' + name + '\' created');            
-              }
-            });
-          }
+          props.ipfs.add({path:'kudos.json', content:JSON.stringify(content)}, (err, result) => {
+          
+            if (err) {
+              
+              setError(err.message);
+  
+            } else {
+              
+              setMessage('Task stored');
+  
+              const id = getBytes32FromIpfsHash(result[0].hash);
+              props.tasks.createTask(id, kudos, {from: account}, (err, result) => {
+              
+                if(err) {
+              
+                  setError(err.message);
+              
+                } else {
+              
+                  setMessage('Task \'' + name + '\' created');            
+                }
+              });
+            }
+          });
         });
       }
     });

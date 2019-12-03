@@ -39,7 +39,8 @@ const UserProfileForm = (props) => {
   const [picture, setPicture] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  
+  const account = props.accounts[0];
+
   const updateProfile = () => {
 
     setMessage('');
@@ -65,6 +66,13 @@ const UserProfileForm = (props) => {
                 setError(err.message);
               } else {
                 setMessage('Profile updated at ' + IPFS_NODE_URL + result[0].hash);
+                props.user.updateUser(getBytes32FromIpfsHash(result[0].hash), {from:account}, (err, result) => {
+                  if(err) {
+                    setError(err.message);
+                  } else {
+                    setMessage('Written to chain');
+                  }
+                });
               }
             });
 
@@ -77,25 +85,30 @@ const UserProfileForm = (props) => {
   };
 
   return (
-    <Form>
-      <Form.Field>          
-        <Label>Name</Label>
-        <Input placeholder='Your name' 
-              onChange={e => setName(e.target.value)} />
-      </Form.Field>
-      <Form.Field>          
-        <Label>Avatar</Label>
-        <ImageUploader
-              withIcon={true}
-              buttonText='Choose image for avatar'
-              onChange={e => setPicture(e)}
-              imgExtension={['.jpg', '.gif', '.png', '.gif']}
-              maxFileSize={5242880} 
-              singleImage='false'
-              withPreview='true'/>
-      </Form.Field>
-      <Button primary onClick={() => updateProfile()}>Update Profile</Button>
-    </Form>
+    <>
+      <h1>Update Profile</h1>
+      <h3>{message}</h3>
+      <h3>{error}</h3>
+      <Form>
+        <Form.Field>          
+          <Label>Name</Label>
+          <Input placeholder='Your name' 
+                onChange={e => setName(e.target.value)} />
+        </Form.Field>
+        <Form.Field>          
+          <Label>Avatar</Label>
+          <ImageUploader
+                withIcon={true}
+                buttonText='Choose image for avatar'
+                onChange={e => setPicture(e)}
+                imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                maxFileSize={5242880} 
+                singleImage={false}
+                withPreview={true}/>
+        </Form.Field>
+        <Button primary onClick={() => updateProfile()}>Update Profile</Button>
+      </Form>
+    </>
   );
 };
 
@@ -138,7 +151,7 @@ const Wallet = (props) => {
             return response.json();
           })
           .then(data => {
-            
+            setName(data.name);
           });
       }
     });
@@ -162,6 +175,7 @@ const Wallet = (props) => {
     <>
       <h1>Your Wallet</h1>
       <h4>Account: '{account}'</h4>
+      <h4>Name: {name}</h4>
       <h4>Kudos: {balance} tokens</h4>
       <h4>Tasks Allowance: {allowance} tokens</h4>
       <h4>{error}</h4>

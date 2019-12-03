@@ -5,6 +5,7 @@ import 'semantic-ui-css/semantic.min.css';
 import { Table, Button, Input, Label, Form } from 'semantic-ui-react';
 import KudosToken from './contracts/KudosToken.json';
 import Tasks from './contracts/Tasks.json';
+import UserRole from './contracts/UserRole.json';
 import bs58 from 'bs58';
 import ImageUploader from 'react-images-upload';
 const IPFS = require('ipfs');
@@ -33,53 +34,12 @@ function getIpfsHashFromBytes32(bytes32Hex) {
   return hashStr
 }
 
-const Wallet = (props) => {
-  const [balance, setBalance] = useState('0');
-  const account = props.accounts[0];
-  const [allowance, setAllowance] = useState('0');
-  const [proposedIncreaseOfAllowance, setProposedIncreaseOfAllowance] = useState(0);
-  const [ipfsVersion, setIpfsVersion] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+const UserProfileForm = (props) => {
   const [name, setName] = useState('');
   const [picture, setPicture] = useState(null);
-
-  useEffect(() => {
-    props.kudos.balanceOf(account, function(err, result) {
-      setBalance(result.toString());
-    });
-
-    props.kudos.allowance(account, props.tasks.address, function(err, result) {
-      setAllowance(result.toString());
-    });
-
-    props.ipfs.version(function(err, result) {
-      setIpfsVersion(result.version);
-    });
-
-    props.kudos.Approval({}, {fromBlock:0}).watch((err, result) => {
-      
-      if (err) {
-        console.error(err);
-      } else {
-        setAllowance(result.args.value.toString());
-      }
-    });
-  }, []);
-
-  const updateAllowance = () => {
-    
-    if (proposedIncreaseOfAllowance > 0) {
-      props.kudos.increaseAllowance(props.tasks.address, proposedIncreaseOfAllowance, {from: account}, function(err, result) {
-        if(err) {
-          setError(err.message);
-        } else {
-          setMessage('Allowance updated');
-        }
-      });
-    }
-  };
-
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  
   const updateProfile = () => {
 
     setMessage('');
@@ -114,15 +74,96 @@ const Wallet = (props) => {
         }
       });
     }
-  }
+  };
+
+  return (
+    <Form>
+      <Form.Field>          
+        <Label>Name</Label>
+        <Input placeholder='Your name' 
+              onChange={e => setName(e.target.value)} />
+      </Form.Field>
+      <Form.Field>          
+        <Label>Avatar</Label>
+        <ImageUploader
+              withIcon={true}
+              buttonText='Choose image for avatar'
+              onChange={e => setPicture(e)}
+              imgExtension={['.jpg', '.gif', '.png', '.gif']}
+              maxFileSize={5242880} 
+              singleImage='false'
+              withPreview='true'/>
+      </Form.Field>
+      <Button primary onClick={() => updateProfile()}>Update Profile</Button>
+    </Form>
+  );
+};
+
+const Wallet = (props) => {
+  const [balance, setBalance] = useState('0');
+  const account = props.accounts[0];
+  const [allowance, setAllowance] = useState('0');
+  const [proposedIncreaseOfAllowance, setProposedIncreaseOfAllowance] = useState(0);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [name, setName] = useState('');
+  const [picture, setPicture] = useState(null);
+
+  useEffect(() => {
+    props.kudos.balanceOf(account, function(err, result) {
+      setBalance(result.toString());
+    });
+
+    props.kudos.allowance(account, props.tasks.address, function(err, result) {
+      setAllowance(result.toString());
+    });
+
+    props.kudos.Approval({}, {fromBlock:0}).watch((err, result) => {
+      
+      if (err) {
+        console.error(err);
+      } else {
+        setAllowance(result.args.value.toString());
+      }
+    });
+
+    // Look up our user
+    props.user.users(account, (err, result) => {
+      if (err) {
+        // Do nothing for the moment, maybe show a form
+      } else {
+        const url = IPFS_NODE_URL + getIpfsHashFromBytes32(result.toString());
+        fetch(url)
+          .then(response => {
+            return response.json();
+          })
+          .then(data => {
+            
+          });
+      }
+    });
+
+  }, []);
+
+  const updateAllowance = () => {
+    
+    if (proposedIncreaseOfAllowance > 0) {
+      props.kudos.increaseAllowance(props.tasks.address, proposedIncreaseOfAllowance, {from: account}, function(err, result) {
+        if(err) {
+          setError(err.message);
+        } else {
+          setMessage('Allowance updated');
+        }
+      });
+    }
+  };
 
   return(
     <>
       <h1>Your Wallet</h1>
       <h4>Account: '{account}'</h4>
-      <h4>IPFS version: {ipfsVersion}</h4>
-      <h4>Your Kudos balance is: {balance} tokens</h4>
-      <h4>Tasks has an allowance of: {allowance} tokens</h4>
+      <h4>Kudos: {balance} tokens</h4>
+      <h4>Tasks Allowance: {allowance} tokens</h4>
       <h4>{error}</h4>
       <h4>{message}</h4>
       <Form>
@@ -134,26 +175,7 @@ const Wallet = (props) => {
         </Form.Field>
         <Button primary onClick={() => updateAllowance()}>Update Allowance</Button>
       </Form>
-
-      <Form>
-        <Form.Field>          
-          <Label>Name</Label>
-          <Input placeholder='Your name' 
-                onChange={e => setName(e.target.value)} />
-        </Form.Field>
-        <Form.Field>          
-          <Label>Avatar</Label>
-          <ImageUploader
-                withIcon={true}
-                buttonText='Choose image for avatar'
-                onChange={e => setPicture(e)}
-                imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                maxFileSize={5242880} 
-                singleImage='false'
-                withPreview='true'/>
-        </Form.Field>
-        <Button primary onClick={() => updateProfile()}>Update Profile</Button>
-      </Form>
+      <UserProfileForm {...props}/>
     </>
   );
 };
@@ -314,7 +336,14 @@ const TaskEntry = (props) => {
 
 class App extends Component {
 
-  state = {web3: null, accounts: [], kudos: null, tasks: null, ipfs: null};
+  state = { 
+            web3: null, 
+            accounts: [], 
+            kudos: null, 
+            tasks: null, 
+            ipfs: null, 
+            user: null
+          };
   
   handleChange(event, newValue) {
     this.setState({value: newValue});
@@ -328,16 +357,20 @@ class App extends Component {
       const networkId = await web3.version.network;
       const kudosTokenDeployedNetwork = KudosToken.networks[networkId];
       const tasksDeployedNetwork = Tasks.networks[networkId];
+      const userRoleDeployedNetwork = UserRole.networks[networkId];
       const kudosTokenContract  = web3.eth.contract(KudosToken.abi);
       const kudosInstance = kudosTokenContract.at(kudosTokenDeployedNetwork.address);
       const tasksContract  = web3.eth.contract(Tasks.abi);
       const tasksInstance = tasksContract.at(tasksDeployedNetwork.address);
+      const userRoleContract  = web3.eth.contract(UserRole.abi);
+      const userRoleInstance = userRoleContract.at(userRoleDeployedNetwork.address);
       const node = await IPFS.create();
       
       this.setState({ web3:web3, 
                       accounts:accounts, 
                       kudos:kudosInstance, 
                       tasks:tasksInstance,
+                      user:userRoleInstance,
                       ipfs: node});
       
     } catch (error) {

@@ -4,9 +4,6 @@ contract UserRole {
 
     mapping(address => bytes32) public users;
 
-    constructor() public {
-    }
-
     function updateUser(bytes32 _id)
         public
         returns (bool) {

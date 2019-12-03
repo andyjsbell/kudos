@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import './App.css';
 import getWeb3 from "./utils/getWeb3";
 import 'semantic-ui-css/semantic.min.css';
-import { Table, Button, Input, Label, Form } from 'semantic-ui-react';
+import { Table, Button, Input, Label, Form, Image } from 'semantic-ui-react';
 import KudosToken from './contracts/KudosToken.json';
 import Tasks from './contracts/Tasks.json';
 import UserRole from './contracts/UserRole.json';
@@ -152,6 +152,7 @@ const Wallet = (props) => {
           })
           .then(data => {
             setName(data.name);
+            setPicture(data.picture);
           });
       }
     });
@@ -176,6 +177,7 @@ const Wallet = (props) => {
       <h1>Your Wallet</h1>
       <h4>Account: '{account}'</h4>
       <h4>Name: {name}</h4>
+      <Image src={IPFS_NODE_URL + picture} size='small' />
       <h4>Kudos: {balance} tokens</h4>
       <h4>Tasks Allowance: {allowance} tokens</h4>
       <h4>{error}</h4>

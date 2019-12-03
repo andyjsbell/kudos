@@ -108,17 +108,7 @@ const TaskList = (props) => {
       
       if (tmpTasks.some(t => t.id === result.args.task))
         return;
-      
-      // tmpTasks = [...tmpTasks, 
-      //             { id: result.args.task,
-      //               value: {  
-      //                 task: result.args.task, 
-      //                 owner: result.args.owner,
-      //                 tokens: result.args.tokens.toString()
-      //               }
-      //             }];
-      
-      // setTasks(tmpTasks);
+
       const url = 'https://ipfs.io/ipfs/' + getIpfsHashFromBytes32(result.args.task);
       fetch(url)
         .then(response => {
@@ -130,7 +120,6 @@ const TaskList = (props) => {
               value: data
             }];
 
-          console.log(data);
           setTasks(tmpTasks);
         });
     });

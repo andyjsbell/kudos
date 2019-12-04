@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Label, Form} from 'semantic-ui-react';
 import ImageUploader from 'react-images-upload';
-const {getBytes32FromIpfsHash, getIpfsHashFromBytes32} = './utils/ipfshelper';
-const {IPFS_NODE_URL} = '../constants';
+import {getBytes32FromIpfsHash, getIpfsHashFromBytes32} from '../utils/ipfshelper';
+import * as Constants from '../constants';
 
 const UserProfileForm = (props, update) => {
     const [name, setName] = useState('');
@@ -35,7 +35,7 @@ const UserProfileForm = (props, update) => {
                 if (err) {
                   setError(err.message);
                 } else {
-                  setMessage('Profile updated at ' + IPFS_NODE_URL + result[0].hash);
+                  setMessage('Profile updated at ' + Constants.IPFS_NODE_URL + result[0].hash);
                   props.user.updateUser(getBytes32FromIpfsHash(result[0].hash), {from:account}, (err, result) => {
                     if(err) {
                       setError(err.message);

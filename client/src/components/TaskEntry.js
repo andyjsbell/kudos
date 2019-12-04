@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import { Button, Input, Label, Form} from 'semantic-ui-react';
-import ImageUploader from 'react-images-upload';
-const {getBytes32FromIpfsHash, getIpfsHashFromBytes32} = './utils/ipfshelper';
-const {IPFS_NODE_URL} = '../constants';
+import {getBytes32FromIpfsHash} from '../utils/ipfshelper';
 
 const TaskEntry = (props) => {
   

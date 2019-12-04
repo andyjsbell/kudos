@@ -34,7 +34,7 @@ function getIpfsHashFromBytes32(bytes32Hex) {
   return hashStr
 }
 
-const UserProfileForm = (props) => {
+const UserProfileForm = (props, update) => {
   const [name, setName] = useState('');
   const [picture, setPicture] = useState(null);
   const [message, setMessage] = useState('');
@@ -71,6 +71,9 @@ const UserProfileForm = (props) => {
                     setError(err.message);
                   } else {
                     setMessage('Written to chain');
+                    if(props.profileUpdated) {
+                      props.profileUpdated(name, hash);
+                    }
                   }
                 });
               }
@@ -172,6 +175,12 @@ const Wallet = (props) => {
     }
   };
 
+  const profileUpdated  = (name, picture) => {
+    console.log('profileUpdated:', name, picture);
+    setName(name);
+    setPicture(picture);
+  };
+
   return(
     <>
       <h1>Your Wallet</h1>
@@ -191,7 +200,8 @@ const Wallet = (props) => {
         </Form.Field>
         <Button primary onClick={() => updateAllowance()}>Update Allowance</Button>
       </Form>
-      <UserProfileForm {...props}/>
+      <UserProfileForm
+        {...{...props, profileUpdated}}/>
     </>
   );
 };
@@ -459,11 +469,16 @@ class App extends Component {
     }
   };
 
+  f() {
+    console.log('hello');
+  }
+
   render() {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contracts...</div>;
     }
     
+    const update = () => this.f();
     return (
       <>
         <h1>Welcome to Kudos!</h1>

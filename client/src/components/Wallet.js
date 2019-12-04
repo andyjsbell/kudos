@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Label, Form, Image } from 'semantic-ui-react';
 import UserProfileForm from './UserProfileForm';
-const {getBytes32FromIpfsHash, getIpfsHashFromBytes32} = '../utils/ipfshelper';
-const {IPFS_NODE_URL} = '../constants';
+import {getBytes32FromIpfsHash, getIpfsHashFromBytes32} from '../utils/ipfshelper';
+import * as Constants from '../constants';
 
 const Wallet = (props) => {
     const [balance, setBalance] = useState('0');
@@ -37,7 +37,7 @@ const Wallet = (props) => {
         if (err) {
             // Do nothing for the moment, maybe show a form
         } else {
-            const url = IPFS_NODE_URL + getIpfsHashFromBytes32(result.toString());
+            const url = Constants.IPFS_NODE_URL + getIpfsHashFromBytes32(result.toString());
             fetch(url)
             .then(response => {
                 return response.json();
@@ -74,7 +74,7 @@ const Wallet = (props) => {
         <h1>Your Wallet</h1>
         <h4>Account: '{account}'</h4>
         <h4>Name: {name}</h4>
-        <Image src={IPFS_NODE_URL + picture} size='small' />
+        <Image src={Constants.IPFS_NODE_URL + picture} size='small' />
         <h4>Kudos: {balance} tokens</h4>
         <h4>Tasks Allowance: {allowance} tokens</h4>
         <h4>{error}</h4>

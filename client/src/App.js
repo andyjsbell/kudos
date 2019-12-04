@@ -8,9 +8,9 @@ import Tasks from './contracts/Tasks.json';
 import UserRole from './contracts/UserRole.json';
 import Wallet from './components/Wallet';
 import TaskEntry from './components/TaskEntry';
+import {getBytes32FromIpfsHash, getIpfsHashFromBytes32} from './utils/ipfshelper';
+import * as Constants from './constants';
 
-const {getBytes32FromIpfsHash, getIpfsHashFromBytes32} = './utils/ipfshelper';
-const {IPFS_NODE_URL} = './constants';
 const IPFS = require('ipfs');
 
 const TaskList = (props) => {
@@ -24,7 +24,7 @@ const TaskList = (props) => {
 
     props.tasks.TaskCreated({}, {fromBlock:0}).watch((err, result) => {
       
-      const url = IPFS_NODE_URL + getIpfsHashFromBytes32(result.args.task);
+      const url = Constants.IPFS_NODE_URL + getIpfsHashFromBytes32(result.args.task);
       fetch(url)
         .then(response => {
           return response.json();
@@ -48,7 +48,7 @@ const TaskList = (props) => {
 
                   setTasks(tmpTasks);
                 } else {
-                  const url = IPFS_NODE_URL + getIpfsHashFromBytes32(userResult.toString());
+                  const url = Constants.IPFS_NODE_URL + getIpfsHashFromBytes32(userResult.toString());
                   
                   fetch(url)
                     .then(response => {
@@ -108,7 +108,7 @@ const TaskList = (props) => {
         <Table.Body>
           {tasks.map(row => (
             <Table.Row key={row.id}>
-              <Table.Cell align="left"><a href={IPFS_NODE_URL + getIpfsHashFromBytes32(row.id)}>{row.value.id}</a></Table.Cell>
+              <Table.Cell align="left"><a href={Constants.IPFS_NODE_URL + getIpfsHashFromBytes32(row.id)}>{row.value.id}</a></Table.Cell>
               <Table.Cell align="left">{row.value.name}</Table.Cell>
               <Table.Cell align="left">{row.value.description}</Table.Cell>
               <Table.Cell align="left">{row.value.kudos}</Table.Cell>
@@ -149,6 +149,7 @@ class App extends Component {
   componentDidMount = async () => {
     try {
       
+      // getIpfsHashFromBytes32('hello');  
       const web3 = await getWeb3();
       const accounts = await web3.eth.accounts;
       const networkId = await web3.version.network;

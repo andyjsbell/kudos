@@ -16,11 +16,11 @@ const Wallet = (props) => {
 
     useEffect(() => {
         props.kudos.balanceOf(account, function(err, result) {
-        setBalance(result.toString());
+            setBalance(result.toString());
         });
 
         props.kudos.allowance(account, props.tasks.address, function(err, result) {
-        setAllowance(result.toString());
+            setAllowance(result.toString());
         });
 
         props.kudos.Approval({}, {fromBlock:0}).watch((err, result) => {
@@ -54,11 +54,11 @@ const Wallet = (props) => {
     const updateAllowance = () => {
         
         if (proposedIncreaseOfAllowance > 0) {
-        props.kudos.increaseAllowance(props.tasks.address, proposedIncreaseOfAllowance, {from: account}, function(err, result) {
+            props.kudos.increaseAllowance(props.tasks.address, proposedIncreaseOfAllowance, {from: account}, function(err, result) {
             if(err) {
-            setError(err.message);
+                setError(err.message);
             } else {
-            setMessage('Allowance updated');
+                setMessage('Allowance updated');
             }
         });
         }

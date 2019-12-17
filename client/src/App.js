@@ -65,16 +65,11 @@ class App extends Component {
     }
   };
 
-  f() {
-    console.log('hello');
-  }
-
   render() {
     if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contracts...</div>;
+      return <div>Loading...</div>;
     }
     
-    const update = () => this.f();
     return (
       <>
         <h1>Welcome to Kudos!</h1>
